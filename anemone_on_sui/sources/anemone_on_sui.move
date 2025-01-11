@@ -1,4 +1,4 @@
-module anemone::role_manager {
+module anemone_on_sui::role_manager {
 
     use sui::object::{Self, UID};
     use sui::tx_context::{Self, TxContext};
@@ -11,6 +11,7 @@ module anemone::role_manager {
     const INITIAL_HEALTH: u64 = 100;
     const HEALTH_DECAY_PER_EPOCH: u64 = 1;  // Amount of health lost per epoch
     const MAX_INACTIVE_EPOCHS: u64 = 100;  // Epochs after which the role becomes dormant
+    const ACTIVATION_COST:u64 = 10;
 
 
     /// Error codes
@@ -28,25 +29,27 @@ module anemone::role_manager {
         special_state: Option<vector<u8>>, // Special state (e.g., "Soul Frozen")
         last_epoch: u64,       // Last epoch the role was updated
         inactive_epochs: u64,  // Number of consecutive inactive epochs
+        balance: Balance<SUI>,
     }
 
     /// Create a new Role
-    public entry fun create_role(owner: &signer, ctx: &mut TxContext) {
+    public entry fun create_role(ctx: &mut TxContext) {
         let id = object::new(ctx);
-        let current_epoch = tx_context::current_epoch(ctx);
+        let current_epoch = tx_context::epoch(ctx);
         let role = Role {
             id,
-            owner: signer::address_of(owner), // Initialize the owner address
+            owner: ctx.sender(), // Initialize the owner address
             health: 100,                     // Initialize health points
             is_active: false,                // Initialize as inactive
             is_locked: false,                // Initialize as unlocked
-            special_state: Option::none(),   // Initialize special_state as None
+            special_state: option::none(),   // Initialize special_state as None
             last_epoch: current_epoch,       // Set the current epoch
             inactive_epochs: 0,              // Initialize inactive epochs
+            balance: balance::zero()
         };
 
         // Store the Role object in the owner's address
-        move_to(owner, role);
+        transfer::share_object(role);
     }
 
     /// Deposit SUI to Maintain or Restore Health
@@ -57,47 +60,47 @@ module anemone::role_manager {
         assert!(balance > 0, ERR_INSUFFICIENT_FUNDS);
 
         // Transfer the deposited SUI
-        coin::transfer(coin, recipient, ctx);
+        balance::join(&mut role.balance, coin::into_balance(coin));
 
         // Increase health (cap at INITIAL_HEALTH)
         role.health = role.health + balance;
-        if role.health > INITIAL_HEALTH {
+        if (role.health > INITIAL_HEALTH) {
             role.health = INITIAL_HEALTH;
-        }
+        };
 
         // Reset inactive epoch counter and update the last epoch
         role.inactive_epochs = 0;
-        role.last_epoch = tx_context::current_epoch(ctx);
+        role.last_epoch = tx_context::epoch(ctx);
     }
 
 
     /// Update Role Health Per Epoch
     public entry fun update_role_health(role: &mut Role, ctx: &mut TxContext) {
-        let current_epoch = tx_context::current_epoch(ctx);
+        let current_epoch = tx_context::epoch(ctx);
 
         // Calculate the number of epochs since the last update
         let epochs_since_last_update = current_epoch - role.last_epoch;
 
-        if epochs_since_last_update > 0 {
+        if (epochs_since_last_update > 0) {
             // Decrease health for each elapsed epoch
             let total_decay = epochs_since_last_update * HEALTH_DECAY_PER_EPOCH;
-            if role.health > total_decay {
+            if (role.health > total_decay) {
                 role.health = role.health - total_decay;
             } else {
                 role.health = 0;
-            }
+            };
 
             // Update inactive epochs if health is 0
-            if role.health == 0 {
+            if (role.health == 0) {
                 role.inactive_epochs = role.inactive_epochs + epochs_since_last_update;
             } else {
                 role.inactive_epochs = 0; // Reset if health is maintained
-            }
+            };
 
             // Mark the role as dormant if inactive for too long
-            if role.inactive_epochs >= MAX_INACTIVE_EPOCHS {
+            if (role.inactive_epochs >= MAX_INACTIVE_EPOCHS) {
                 role.is_active = false;
-            }
+            };
 
             // Update the last epoch
             role.last_epoch = current_epoch;
@@ -115,17 +118,17 @@ module anemone::role_manager {
 
         // Transfer the deposited SUI
         let balance = coin::value(&coin);
-        coin::transfer(coin, recipient, ctx);
+        transfer::public_transfer(coin, recipient);
 
         // Increase health (cap at INITIAL_HEALTH)
         role.health = role.health + balance;
-        if role.health > INITIAL_HEALTH {
+        if (role.health > INITIAL_HEALTH){
             role.health = INITIAL_HEALTH;
-        }
+        };
 
         // Reset inactive epoch counter and update the last epoch
         role.inactive_epochs = 0;
-        role.last_epoch = tx_context::current_epoch(ctx);
+        role.last_epoch = tx_context::epoch(ctx);
     }
 
 
@@ -152,7 +155,7 @@ module anemone::role_manager {
         );
 
         // Transfer the activation cost
-        coin::transfer(coin, recipient, ctx);
+        transfer::public_transfer(coin, recipient);
 
         // Activate the role
         role.is_active = true;
@@ -170,7 +173,7 @@ module anemone::role_manager {
     public entry fun set_special_state(role: &mut Role, state: vector<u8>, ctx: &mut TxContext) {
         assert!(role.owner == tx_context::sender(ctx), ERR_NOT_OWNER);
 
-        role.special_state = Option::some(state);
+        role.special_state = option::some(state);
     }
 
 
@@ -178,7 +181,7 @@ module anemone::role_manager {
     public entry fun clear_special_state(role: &mut Role, ctx: &mut TxContext) {
         assert!(role.owner == tx_context::sender(ctx), ERR_NOT_OWNER);
 
-        role.special_state = Option::none();
+        role.special_state = option::none();
     }
 
 
