@@ -1,0 +1,48 @@
+---
+compiled_package_info:
+  package_name: anemone
+  address_alias_instantiation:
+    anemone: "0000000000000000000000000000000000000000000000000000000000000000"
+    nft_protocol: 01735f24294e55a988541e97db050903cf8a70ce38c77ad219c134344eda67ac
+    ob_allowlist: 557ec0426a2c803b3769f152c12ad9ad0b2cecc4e6cd2716be055ad4cc9df29f
+    ob_authlist: 8c19460961af40edf348433cd41547f63e306e4b5c1a0ae9269364bd9fcbb5a6
+    ob_kiosk: d0a449fc6b27195df90aff0076cdd84dd43f600235b23144f2422741b1bb86a8
+    ob_permissions: 941e0a5b9ea70064b1d8649229ceb3216e0ef36802320f50b4b00bd9178b8073
+    ob_pseudorandom: 04b4ebbcaeead1d059a4b8bc4e8d532e9470d4d514e2539c6350b2b11c22b6aa
+    ob_request: af6ff929224de84ca0372eceef9a1c891bae68d03427bfcf5e99458a2c1498a1
+    ob_utils: cdbd730f422a89174ee4717e97a3db1c48b008f969eec00846a0d685b2437f8a
+    originmate: 8b111cb401053b3b61ef37832cc16d0784a77c2c1058014ff7057ec4cf6f8932
+    std: "0000000000000000000000000000000000000000000000000000000000000001"
+    sui: "0000000000000000000000000000000000000000000000000000000000000002"
+  source_digest: FAF87EEDE5E7CB68570B8C1B04EA1DDCDB640900B22F2150362A454D7AC161B6
+  build_flags:
+    dev_mode: false
+    test_mode: false
+    generate_docs: false
+    install_dir: ~
+    force_recompilation: false
+    lock_file: "./Move.lock"
+    fetch_deps_only: false
+    skip_fetch_latest_git_deps: false
+    default_flavor: sui
+    default_edition: ~
+    deps_as_root: false
+    silence_warnings: false
+    warnings_are_errors: false
+    json_errors: false
+    additional_named_addresses: {}
+    lint_flag:
+      no_lint: false
+      lint: false
+dependencies:
+  - Allowlist
+  - Authlist
+  - Kiosk
+  - MoveStdlib
+  - NftProtocol
+  - Originmate
+  - Permissions
+  - Pseudorandom
+  - Request
+  - Sui
+  - Utils
