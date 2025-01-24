@@ -9,6 +9,7 @@ module anemone::role_manager {
     use anemone::bot_nft::{Self, BotNFT};
     use nft_protocol::mint_cap::{Self, MintCap};
     use std::ascii::String;
+    use anemone::skill_manager::{Self, Skill};
 
     // Constants for health and epochs
     const DECIMAI: u64 = 1_000_000_000;
@@ -23,6 +24,9 @@ module anemone::role_manager {
     const ERR_INSUFFICIENT_FUNDS: u64 = 102;
     const ERR_NOT_AUTHORIZED: u64 = 103;
     const ERR_NOT_BOT_ADDRESS: u64 = 104;
+    const ERR_SKILL_ALREADY_EXISTS: u64 = 105;
+    const ERR_SKILL_NOT_FOUND: u64 = 106;
+    const ERR_SKILL_NOT_ENABLED: u64 = 107;
 
     /// Role object definition
     public struct Role has key, store {
@@ -31,11 +35,11 @@ module anemone::role_manager {
         health: u64, // Health points
         is_active: bool, // Activation status
         is_locked: bool, // Locked status for trading
-        special_state: Option<vector<String>>, // Special state (e.g., "Soul Frozen")
         last_epoch: u64, // Last epoch the role was updated
         inactive_epochs: u64, // Number of consecutive inactive epochs
         balance: Balance<SUI>,
         bot_address: address, // the authorized bot address
+        skills: vector<Skill>
     }
 
     /// Create a new Role
@@ -67,11 +71,11 @@ module anemone::role_manager {
             bot_nft_id: object::id(&bot_nft),
             is_active: true,
             is_locked: false,
-            special_state: option::none(),
             last_epoch: tx_context::epoch(ctx),
             inactive_epochs: 0,
             balance: coin::into_balance(coin),
-            bot_address
+            bot_address: bot_address,
+            skills: vector::empty()
         };
 
         transfer::share_object(role);
@@ -179,34 +183,6 @@ module anemone::role_manager {
         role.is_locked = !role.is_locked; // Toggle the locked status
     }
 
-    /// Set Special State for the Role
-    public entry fun set_special_state(
-        role: &mut Role,
-        bot_nft: &BotNFT,
-        state: vector<String>,
-    ) {
-        let bot_nft_id = object::id(bot_nft);
-
-        assert!(
-            bot_nft_id == role.bot_nft_id,
-            ERR_NOT_AUTHORIZED
-        );
-
-        role.special_state = option::some(state);
-    }
-
-    /// Clear Special State for the Role
-    public entry fun clear_special_state(role: &mut Role, bot_nft: &BotNFT) {
-        let bot_nft_id = object::id(bot_nft);
-
-        assert!(
-            bot_nft_id == role.bot_nft_id,
-            ERR_NOT_AUTHORIZED
-        );
-
-        role.special_state = option::none();
-    }
-
     /// Deactivate a Role
     public entry fun deactivate_role(role: &mut Role, bot_nft: &BotNFT) {
         let bot_nft_id = object::id(bot_nft);
@@ -219,19 +195,72 @@ module anemone::role_manager {
         role.is_active = false;
     }
 
-    // /// Add Yield Data Tracking (Stub for Future Integration)
-    // public fun track_yield_data(role: &Role) {
-    //     // Placeholder for tracking yield data logic
-    // }
+    /// Add a skill to the role
+    public entry fun add_skill(
+        role: &mut Role,
+        bot_nft: &BotNFT,
+        skill: &Skill,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext
+    ) {
+        // Verify ownership
+        let bot_nft_id = object::id(bot_nft);
+        assert!(
+            bot_nft_id == role.bot_nft_id,
+            ERR_NOT_AUTHORIZED
+        );
 
-    // /// Recommend Strategies Based on Transactions (Stub for Future Integration)
-    // public fun recommend_strategy(role: &Role) {
-    //     // Placeholder for strategy recommendation logic
-    // }
+        // Check if skill is enabled
+        assert!(
+            skill_manager::is_enabled(skill),
+            ERR_SKILL_NOT_ENABLED
+        );
 
-    // /// Support Multiplayer Role Cultivation (Stub for Future Integration)
-    // public fun support_multiplayer(role: &Role) {
-    //     // Placeholder for multiplayer role management
-    // }
+        // Check if skill already exists
+        let skill_id = object::id(skill);
+        let mut i = 0;
+        let len = vector::length(&role.skills);
+        while (i < len) {
+            let existing_skill = vector::borrow(&role.skills, i);
+            assert!(
+                object::id(existing_skill) != skill_id,
+                ERR_SKILL_ALREADY_EXISTS
+            );
+            i = i + 1;
+        };
+
+        // Add skill to role
+        vector::push_back(&mut role.skills, *skill);
+    }
+
+    /// Remove a skill from the role
+    public entry fun remove_skill(
+        role: &mut Role,
+        bot_nft: &BotNFT,
+        skill_id: ID,
+    ) {
+        // Verify ownership
+        let bot_nft_id = object::id(bot_nft);
+        assert!(
+            bot_nft_id == role.bot_nft_id,
+            ERR_NOT_AUTHORIZED
+        );
+
+        // Find and remove skill
+        let i = 0;
+        let len = vector::length(&role.skills);
+        let found = false;
+        while (i < len) {
+            let skill = vector::borrow(&role.skills, i);
+            if (object::id(skill) == skill_id) {
+                vector::remove(&mut role.skills, i);
+                found = true;
+                break
+            };
+            i = i + 1;
+        };
+
+        assert!(found, ERR_SKILL_NOT_FOUND);
+    }
 
 }
