@@ -2,9 +2,11 @@
 
 [move]
 version = 3
-manifest_digest = "E3C2A5EB0783513AF071B7067F8452C9AAFDE1D89E59B570AF0779ABF256EAB7"
-deps_digest = "3C4103934B1E040BB6B23F1D610B4EF9F2F1166A50A104EADCF77467C004C600"
+manifest_digest = "A9DCEBAD2B8E170D53DD55EFA40A3A1F35D8CC706B66B145AA2F59133C14527E"
+deps_digest = "F9B494B64F0615AED0E98FC12A85B85ECD2BC5185C22D30E7F67786BB52E507C"
 dependencies = [
+  { id = "CetusClmm", name = "CetusClmm" },
+  { id = "LegatoMath", name = "LegatoMath" },
   { id = "NftProtocol", name = "NftProtocol" },
   { id = "Sui", name = "Sui" },
 ]
@@ -28,12 +30,46 @@ dependencies = [
 ]
 
 [[move.package]]
+id = "CetusClmm"
+source = { git = "https://github.com/CetusProtocol/cetus-clmm-interface.git", rev = "testnet-v1.25.0", subdir = "sui/cetus_clmm" }
+
+dependencies = [
+  { id = "IntegerMate", name = "IntegerMate" },
+  { id = "MoveSTL", name = "MoveSTL" },
+  { id = "Sui", name = "Sui" },
+]
+
+[[move.package]]
+id = "IntegerMate"
+source = { git = "https://github.com/CetusProtocol/integer-mate.git", rev = "testnet-v1.23.1", subdir = "sui" }
+
+dependencies = [
+  { id = "Sui", name = "Sui" },
+]
+
+[[move.package]]
 id = "Kiosk"
 source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "testnet", subdir = "contracts/kiosk" }
 
 dependencies = [
   { id = "Permissions", name = "Permissions" },
   { id = "Request", name = "Request" },
+  { id = "Sui", name = "Sui" },
+]
+
+[[move.package]]
+id = "LegatoMath"
+source = { local = "../legato_math" }
+
+dependencies = [
+  { id = "Sui", name = "Sui" },
+]
+
+[[move.package]]
+id = "MoveSTL"
+source = { git = "https://github.com/CetusProtocol/move-stl.git", rev = "testnet-v1.23.1", subdir = "sui" }
+
+dependencies = [
   { id = "Sui", name = "Sui" },
 ]
 
