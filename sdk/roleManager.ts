@@ -159,7 +159,7 @@ export class RoleManager {
             arguments: [
                 tx.object(roleId),
                 tx.object(botNftId),
-                tx.pure.id(skillId)
+                tx.object(skillId)
             ],
         });
 
