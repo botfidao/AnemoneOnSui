@@ -39,7 +39,7 @@ module anemone::role_manager {
         inactive_epochs: u64, // Number of consecutive inactive epochs
         balance: Balance<SUI>,
         bot_address: address, // the authorized bot address
-        skills: vector<Skill>
+        skills: vector<ID>
     }
 
     /// Create a new Role
@@ -200,7 +200,6 @@ module anemone::role_manager {
         role: &mut Role,
         bot_nft: &BotNFT,
         skill: &Skill,
-        payment: Coin<SUI>,
         ctx: &mut TxContext
     ) {
         // Verify ownership
@@ -221,16 +220,16 @@ module anemone::role_manager {
         let mut i = 0;
         let len = vector::length(&role.skills);
         while (i < len) {
-            let existing_skill = vector::borrow(&role.skills, i);
+            let existing_skill_id = vector::borrow(&role.skills, i);
             assert!(
-                object::id(existing_skill) != skill_id,
+                existing_skill_id != skill_id,
                 ERR_SKILL_ALREADY_EXISTS
             );
             i = i + 1;
         };
 
         // Add skill to role
-        vector::push_back(&mut role.skills, *skill);
+        vector::push_back(&mut role.skills, skill_id);
     }
 
     /// Remove a skill from the role
@@ -247,12 +246,12 @@ module anemone::role_manager {
         );
 
         // Find and remove skill
-        let i = 0;
+        let mut i = 0;
         let len = vector::length(&role.skills);
-        let found = false;
+        let mut found = false;
         while (i < len) {
-            let skill = vector::borrow(&role.skills, i);
-            if (object::id(skill) == skill_id) {
+            let id = vector::borrow(&role.skills, i);
+            if (id == skill_id) {
                 vector::remove(&mut role.skills, i);
                 found = true;
                 break

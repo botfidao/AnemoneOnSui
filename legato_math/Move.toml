@@ -1,0 +1,9 @@
+[package]
+name = "LegatoMath"
+edition = "2024.beta"
+
+[dependencies] 
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.35.1" }
+
+[addresses]
+legato_math = "0x0"
