@@ -24,7 +24,7 @@ export function AgentMint() {
   const [agentDescription, setAgentDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toasts, showToast, hideToast } = useToast();
-  const sdk = new AnemoneSDK(suiClient, keypair);
+  const sdk = new AnemoneSDK();
  
   async function getCreatedObjects(digest: string) {
     const txDetails = await suiClient.getTransactionBlock({
@@ -44,84 +44,104 @@ export function AgentMint() {
 }
 
   const handleTradingBotClick = async () => {
-    let address: string | undefined; // 定义一个变量来存储地址
+    let address: string | undefined;
     try {
-      if (!currentAccount) {
-        showToast("Please connect your wallet", "error");
-        return;
-      }
-      
-      setIsLoading(true);
-      showToast("Generating address...", "info");
+        if (!currentAccount) {
+            showToast("Please connect your wallet", "error");
+            return;
+        }
+        
+        setIsLoading(true);
+        showToast("Generating address...", "info");
 
-      const response = await fetch("https://sui-colearn.vercel.app/generate-address", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+        const response = await fetch("https://sui-colearn.vercel.app/generate-address", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to generate address");
-      }
+        if (!response.ok) {
+          throw new Error("Failed to generate address");
+        }
 
-      const data = await response.json();
-      address = data.address; // 将地址存储到变量中
-      console.log("Generated Address:", address);
-      showToast("Address generated successfully", "info");
+        const data = await response.json();
+        address = data.address;
+        console.log("Generated Address:", address);
+        showToast("Address generated successfully", "info");
     } catch (error) {
-      if (error instanceof Error) {
-        showToast(error.message, "error");
-      } else {
-        showToast("Failed to generate address", "error");
-      }
+        if (error instanceof Error) {
+            showToast(error.message, "error");
+        } else {
+            showToast("Failed to generate address", "error");
+        }
+        setIsLoading(false);
+        return;
     }
+
     console.log('\nCreating role...');
     if (!address) {
         showToast("Address is not defined", "error");
-        return; // 退出函数以避免调用 createRole
+        return;
     }
 
-    const createRoleTx = await sdk.roleManager.createRole(
-        address, // 使用存储的地址
+    const tx = await sdk.roleManager.createRole(
+        address,
         agentName,
         agentDescription,
         agentLogo,
         BigInt(1_000_000_000) // 1 SUI
     );
 
-    await suiClient.waitForTransaction({
-        digest: createRoleTx.digest,
-    });
-
-    const roleObjects = await getCreatedObjects(createRoleTx.digest);
-    // 根据类型筛选Role和BotNFT对象
-    const roleId = roleObjects.find(obj => 
-        obj.objectType.includes('::role_manager::Role'))?.objectId;
-    const botNftId = roleObjects.find(obj => 
-        obj.objectType.includes('::bot_nft::BotNFT'))?.objectId;
-    
-    console.log('Created role with ID:', roleId);
-    console.log('Created bot NFT with ID:', botNftId);
-
-    // 发送 POST 请求到指定的 API
-    const mappingResponse = await fetch("https://sui-colearn.vercel.app/store-nft-mapping", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
+    signAndExecute(
+        {
+            transaction: tx,
         },
-        body: JSON.stringify({
-            address: address, // 使用之前生成的地址
-            nft_id: botNftId, // 使用创建的 bot NFT ID
-            role_id: roleId, // 使用创建的角色 ID
-        }),
-    });
+        {
+            onSuccess: async (result) => {
+                showToast("Creating role...", "info");
+                await suiClient.waitForTransaction({
+                    digest: result.digest,
+                });
 
-    if (!mappingResponse.ok) {
-        throw new Error("Failed to store NFT mapping");
-    }
+                const roleObjects = await getCreatedObjects(result.digest);
+                // Filter Role and BotNFT objects
+                const roleId = roleObjects.find(obj => 
+                    obj.objectType.includes('::role_manager::Role'))?.objectId;
+                const botNftId = roleObjects.find(obj => 
+                    obj.objectType.includes('::bot_nft::BotNFT'))?.objectId;
+                
+                console.log('Created role with ID:', roleId);
+                console.log('Created bot NFT with ID:', botNftId);
 
-    console.log("NFT mapping stored successfully");
+                // Store NFT mapping
+                const mappingResponse = await fetch("https://sui-colearn.vercel.app/store-nft-mapping", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        address: address,
+                        nft_id: botNftId,
+                        role_id: roleId,
+                    }),
+                });
+
+                if (!mappingResponse.ok) {
+                    throw new Error("Failed to store NFT mapping");
+                }
+
+                console.log("NFT mapping stored successfully");
+                showToast("Agent created successfully!", "success");
+                setIsLoading(false);
+            },
+            onError: (error) => {
+                showToast(error.message || "Failed to create agent", "error");
+                setIsLoading(false);
+            },
+        }
+    );
+
   };
 
   // 添加新的辅助函数

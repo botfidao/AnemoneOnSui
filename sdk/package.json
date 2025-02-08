@@ -1,6 +1,6 @@
 {
 	"dependencies": {
-		"@mysten/sui": "^1.21.0",
+		"@mysten/sui": "1.14.2",
 		"@types/node": "^22.10.10",
 		"dotenv": "^16.4.7"
 	},
