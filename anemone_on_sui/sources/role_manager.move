@@ -17,7 +17,7 @@ module anemone::role_manager {
     const HEALTH_DECAY_PER_EPOCH: u64 = 1 * DECIMAI; // Amount of health lost per epoch
     const MAX_INACTIVE_EPOCHS: u64 = 100; // Epochs after which the role becomes dormant
     const MIN_ACTIVATION_HEALTH: u64 = 1 * DECIMAI;
-    const HEALTH_PER_SUI: u64 = 100;
+    const HEALTH_PER_SUI: u64 = 1000;
 
     /// Error codes
     const ERR_ROLE_ALREADY_ACTIVE: u64 = 101;
