@@ -90,7 +90,7 @@ export function AgentMint() {
         agentName,
         agentDescription,
         agentLogo,
-        BigInt(1_000_000_000) // 1 SUI
+        BigInt(100_000_000) // 0.1 SUI
     );
 
     signAndExecute(
