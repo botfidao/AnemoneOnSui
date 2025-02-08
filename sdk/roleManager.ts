@@ -1,18 +1,8 @@
 import { Transaction } from "@mysten/sui/transactions";
-import { SuiClient } from "@mysten/sui/client";
 import { PACKAGE_ID, OBJECTS } from "./config";
 
 export class RoleManager {
-    private client: SuiClient;
-    private signer: Parameters<SuiClient['signAndExecuteTransaction']>[0]['signer'];
 
-    constructor(
-        client: SuiClient,
-        signer: Parameters<SuiClient['signAndExecuteTransaction']>[0]['signer']
-    ) {
-        this.client = client;
-        this.signer = signer;
-    }
 
     /**
      * Create a new Role
@@ -45,14 +35,7 @@ export class RoleManager {
             ],
         });
 
-        return await this.client.signAndExecuteTransaction({
-            transaction: tx,
-            signer: this.signer,
-            options: {
-                showEffects: true,
-                showEvents: true,
-            },
-        });
+        return tx;
     }
 
     /**
@@ -71,13 +54,7 @@ export class RoleManager {
             arguments: [tx.object(roleId), coin],
         });
 
-        return await this.client.signAndExecuteTransaction({
-            transaction: tx,
-            signer: this.signer,
-            options: {
-                showEffects: true,
-            },
-        });
+        return tx;
     }
 
     /**
@@ -92,13 +69,7 @@ export class RoleManager {
             arguments: [tx.object(roleId)],
         });
 
-        return await this.client.signAndExecuteTransaction({
-            transaction: tx,
-            signer: this.signer,
-            options: {
-                showEffects: true,
-            },
-        });
+        return tx;
     }
 
     /**
@@ -114,13 +85,7 @@ export class RoleManager {
             arguments: [tx.object(roleId), tx.object(botNftId)],
         });
 
-        return await this.client.signAndExecuteTransaction({
-            transaction: tx,
-            signer: this.signer,
-            options: {
-                showEffects: true,
-            },
-        });
+        return tx;
     }
 
     /**
@@ -136,13 +101,7 @@ export class RoleManager {
             arguments: [tx.object(roleId), tx.object(botNftId)],
         });
 
-        return await this.client.signAndExecuteTransaction({
-            transaction: tx,
-            signer: this.signer,
-            options: {
-                showEffects: true,
-            },
-        });
+        return tx;
     }
 
     /**
@@ -163,13 +122,7 @@ export class RoleManager {
             ],
         });
 
-        return await this.client.signAndExecuteTransaction({
-            transaction: tx,
-            signer: this.signer,
-            options: {
-                showEffects: true,
-            },
-        });
+        return tx;
     }
 
     /**
@@ -190,12 +143,6 @@ export class RoleManager {
             ],
         });
 
-        return await this.client.signAndExecuteTransaction({
-            transaction: tx,
-            signer: this.signer,
-            options: {
-                showEffects: true,
-            },
-        });
+        return tx;
     }
 } 
