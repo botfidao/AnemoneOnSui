@@ -1,18 +1,8 @@
 import { Transaction } from "@mysten/sui/transactions";
-import { SuiClient } from "@mysten/sui/client";
 import { PACKAGE_ID } from "./config";
 
 export class SkillManager {
-    private client: SuiClient;
-    private signer: Parameters<SuiClient['signAndExecuteTransaction']>[0]['signer'];
 
-    constructor(
-        client: SuiClient,
-        signer: Parameters<SuiClient['signAndExecuteTransaction']>[0]['signer']
-    ) {
-        this.client = client;
-        this.signer = signer;
-    }
 
     /**
      * Create a new Skill
@@ -39,14 +29,7 @@ export class SkillManager {
             ],
         });
 
-        return await this.client.signAndExecuteTransaction({
-            transaction: tx,
-            signer: this.signer,
-            options: {
-                showEffects: true,
-                showEvents: true,
-            },
-        });
+        return tx;
     }
 
     /**
@@ -77,13 +60,7 @@ export class SkillManager {
             ],
         });
 
-        return await this.client.signAndExecuteTransaction({
-            transaction: tx,
-            signer: this.signer,
-            options: {
-                showEffects: true,
-            },
-        });
+        return tx;
     }
 
     /**
@@ -98,12 +75,6 @@ export class SkillManager {
             arguments: [tx.object(skillId)],
         });
 
-        return await this.client.signAndExecuteTransaction({
-            transaction: tx,
-            signer: this.signer,
-            options: {
-                showEffects: true,
-            },
-        });
+        return tx;
     }
 } 

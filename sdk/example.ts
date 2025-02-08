@@ -8,7 +8,7 @@ dotenv.config();
 
 const keypair = Ed25519Keypair.fromSecretKey(process.env.PRIVATE_KEY || "");
 const client = new SuiClient({ url: 'https://fullnode.testnet.sui.io' });
-const sdk = new AnemoneSDK(client, keypair);
+const sdk = new AnemoneSDK();
 
 async function getCreatedObjects(digest: string) {
     const txDetails = await client.getTransactionBlock({
@@ -142,12 +142,20 @@ async function main() {
 ]`,
     BigInt(10_000_000) // 0.01 SUI per use
     );
+
+    const createSkillTxDetail = await client.signAndExecuteTransaction({
+        transaction: createSkillTx,
+        signer: keypair,
+        options: {
+            showEffects: true,
+        },
+    })
     
     await client.waitForTransaction({
-        digest: createSkillTx.digest,
+        digest: createSkillTxDetail.digest,
     });
     
-    const skillObjects = await getCreatedObjects(createSkillTx.digest);
+    const skillObjects = await getCreatedObjects(createSkillTxDetail.digest);
     const skillId = skillObjects[0]?.objectId;
     console.log('Created skill with ID:', skillId);
 
@@ -161,11 +169,19 @@ async function main() {
         BigInt(1_000_000_000) // 1 SUI
     );
 
+    const createRoleTxDetail = await client.signAndExecuteTransaction({
+        transaction: createRoleTx,
+        signer: keypair,
+        options: {
+            showEffects: true,  
+        },
+    })
+
     await client.waitForTransaction({
-        digest: createRoleTx.digest,
+        digest: createRoleTxDetail.digest,
     });
 
-    const roleObjects = await getCreatedObjects(createRoleTx.digest);
+    const roleObjects = await getCreatedObjects(createRoleTxDetail.digest);
     // 根据类型筛选Role和BotNFT对象
     const roleId = roleObjects.find(obj => 
         obj.objectType.includes('::role_manager::Role'))?.objectId;
@@ -187,12 +203,19 @@ async function main() {
         skillId
     );
 
+    const addSkillTxDetail = await client.signAndExecuteTransaction({
+        transaction: addSkillTx,
+        signer: keypair,
+        options: {
+            showEffects: true,
+        },
+    })
     await client.waitForTransaction({
-        digest: addSkillTx.digest,
+        digest: addSkillTxDetail.digest,
     });
 
     const txDetails = await client.getTransactionBlock({
-        digest: addSkillTx.digest,
+        digest: addSkillTxDetail.digest,
         options: {
             showEffects: true,
             showEvents: true,

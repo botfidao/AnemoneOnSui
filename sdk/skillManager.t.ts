@@ -7,11 +7,11 @@ dotenv.config();
 
 const keypair = Ed25519Keypair.fromSecretKey(process.env.PRIVATE_KEY || "");
 const client = new SuiClient({ url: 'https://fullnode.testnet.sui.io' });
-const skillManager = new SkillManager(client, keypair);
+const skillManager = new SkillManager();
 
 // Create a new skill
 // https://testnet.suivision.xyz/txblock/UwkoGHT5ThUd4wPuz595wsEv6tu7eNiMtS4Lu59aUSF
-await skillManager.createSkill(
+const tx = await skillManager.createSkill(
     'DexScreener Sui DEX Pairs',
     'Retrieving detailed information about DEX trading pairs on the Sui blockchain, including price, trading volume, liquidity, and other metrics.',
     `## Endpoints
@@ -123,3 +123,10 @@ await skillManager.createSkill(
 ]`,
     BigInt(10_000_000) // 0.01 SUI per use
 );
+await client.signAndExecuteTransaction({
+    transaction: tx,
+    signer: keypair,
+    options: {
+        showEffects: true,
+    },
+})
