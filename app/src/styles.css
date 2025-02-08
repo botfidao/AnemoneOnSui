@@ -638,4 +638,216 @@
   background: var(--gray-2);
   border-radius: 8px;
 }
- 
+
+/* 聊天界面样式 */
+.send-button {
+  background: linear-gradient(90deg, #3898FF 0%, #7A70FF 100%);
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.send-button:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--gray-a4);
+}
+
+.send-button svg {
+  width: 20px;
+  height: 20px;
+  color: white;
+}
+
+/* 自定义滚动条样式 */
+.rt-ScrollAreaViewport::-webkit-scrollbar {
+  width: 8px;
+}
+
+.rt-ScrollAreaViewport::-webkit-scrollbar-track {
+  background: var(--gray-a2);
+  border-radius: 4px;
+}
+
+.rt-ScrollAreaViewport::-webkit-scrollbar-thumb {
+  background: var(--gray-a4);
+  border-radius: 4px;
+}
+
+.rt-ScrollAreaViewport::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-a5);
+}
+
+/* 聊天输入框样式 */
+.chat-input-container {
+  flex: 1;
+  background: var(--gray-a3);
+  border-radius: 8px;
+  padding: 8px 16px;
+}
+
+.chat-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--gray-12);
+  font-size: 16px;
+  line-height: 24px;
+  outline: none;
+}
+
+.chat-input::placeholder {
+  color: var(--gray-a8);
+}
+
+.chat-input-form {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  background: transparent;
+}
+
+.chat-input-form > div {
+  max-width: 768px;
+  width: 100%;
+}
+
+/* 修改消息容器样式 */
+.rt-ScrollArea {
+  background: transparent !important;
+}
+
+/* 限制消息宽度并居中 */
+.messages-container {
+  max-width: 768px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-upload-button {
+  background: var(--gray-a3);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.file-upload-button:hover {
+  background: var(--gray-a4);
+}
+
+.file-upload-button svg {
+  width: 20px;
+  height: 20px;
+  color: var(--gray-12);
+}
+
+/* 侧边栏样式 */
+.agent-sidebar {
+  width: 280px;
+  border-right: 1px solid var(--gray-a4);
+  background: var(--gray-a2);
+  height: 100%;
+}
+
+/* 调整主容器样式 */
+.messages-container {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 20px;
+}
+
+.deposit-button {
+  background: linear-gradient(90deg, #3898FF 0%, #7A70FF 100%) !important;
+  color: white !important;
+  border: none !important;
+  transition: all 0.2s !important;
+  margin-top: 8px !important;
+}
+
+.deposit-button:hover:not(:disabled) {
+  opacity: 0.9 !important;
+  transform: translateY(-1px) !important;
+}
+
+.deposit-button:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  background: var(--gray-a4) !important;
+}
+
+.deposit-input-container {
+  background: var(--gray-a3);
+  border-radius: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--gray-a4);
+  transition: all 0.2s;
+}
+
+.deposit-input-container:focus-within {
+  border-color: var(--gray-a8);
+  box-shadow: 0 0 0 1px var(--gray-a6);
+}
+
+.deposit-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--gray-12);
+  font-size: 16px;
+  line-height: 24px;
+  outline: none;
+}
+
+.deposit-input::placeholder {
+  color: var(--gray-a8);
+}
+
+/* 调整按钮布局和样式 */
+.deposit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.deposit-actions .deposit-button {
+  flex: 1;
+  height: 40px;
+  margin-top: 0 !important;
+  font-weight: 500;
+}
+
+.deposit-button.secondary {
+  background: transparent !important;
+  border: 1px solid var(--gray-a6) !important;
+}
+
+.deposit-button.secondary:hover:not(:disabled) {
+  background: var(--gray-a3) !important;
+  transform: none !important;
+}
