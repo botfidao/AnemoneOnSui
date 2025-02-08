@@ -1,0 +1,641 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.text-field {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--gray-12);
+  padding: 8px;
+  padding-right: 0;
+}
+
+.text-field:focus {
+  outline: none;
+}
+
+.mint-button {
+  width: 100%;
+  background: linear-gradient(90deg, #3898FF 0%, #7A70FF 100%);
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.mint-button:hover {
+  opacity: 0.9;
+}
+
+/* 添加暗色主题支持 */
+:root {
+  color-scheme: dark;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  color: var(--gray-11);
+  font-size: 16px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.nav-button:hover {
+  color: var(--gray-12);
+}
+
+.nav-button.active {
+  color: white;
+}
+
+/* 钱包按钮样式 */
+:where(.wallet-button) {
+  min-height: 40px !important;
+  padding: 0 16px !important;
+  font-size: 15px !important;
+  cursor: pointer !important;
+}
+
+/* 确保连接前后按钮大小一致 */
+:where(.wallet-button-trigger) {
+  min-height: 40px !important;
+  padding: 0 16px !important;
+  font-size: 15px !important;
+  cursor: pointer !important;
+}
+
+.swap-box {
+  background: var(--gray-a2);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.tab-button {
+  flex: 1;
+  background: transparent;
+  color: var(--gray-11);
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  background: var(--gray-a3);
+  color: white;
+}
+
+.amount-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+}
+
+.amount-input input {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  font-weight: 500;
+  width: 100%;
+  padding: 8px;
+}
+
+.amount-input input:focus {
+  outline: none;
+}
+
+.token-select {
+  min-width: 120px;
+  background: var(--gray-a4);
+  border: none;
+  border-radius: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gray-12);
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.token-select:hover {
+  background: var(--gray-a5);
+}
+
+.token-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* 加粗选择框内的文字 */
+.token-select span {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* 加粗下拉菜单中的文字 */
+[data-radix-select-item] {
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+[data-radix-select-item]:hover {
+  background: var(--gray-a4);
+}
+
+[data-radix-select-item][data-highlighted] {
+  background: var(--gray-a4);
+  outline: none;
+}
+
+.arrow-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--gray-a4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 4px solid var(--gray-1);
+  padding: 0;
+  margin: -12px 0;
+  z-index: 1;
+}
+
+.arrow-button:hover {
+  background: var(--gray-a5);
+}
+
+.swap-button {
+  width: 100%;
+  background: linear-gradient(90deg, #3898FF 0%, #7A70FF 100%);
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 8px;
+}
+
+.swap-button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.swap-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.max-button {
+  padding: 2px 6px !important;
+  font-size: 12px !important;
+  color: var(--gray-11) !important;
+  transition: all 0.2s !important;
+  height: auto !important;
+  min-width: auto !important;
+  margin-left: -4px !important;
+  cursor: pointer !important;
+}
+
+.max-button:hover {
+  color: var(--gray-12) !important;
+  background: var(--gray-a3) !important;
+  transform: scale(1.05);
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 16px 24px;
+  border-radius: 16px;
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1000;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toast.info {
+  background: rgba(56, 152, 255, 0.9);
+  color: white;
+  border-left: 4px solid #3898FF;
+}
+
+.toast.error {
+  background: rgba(255, 53, 53, 0.9);
+  color: white;
+  border-left: 4px solid rgb(255, 53, 53);
+}
+
+.toast.success {
+  background: rgba(37, 184, 100, 0.9);
+  color: white;
+  border-left: 4px solid rgb(37, 184, 100);
+}
+
+.toast-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-decoration: none !important;
+  font-size: 12px !important;
+  transition: opacity 0.2s !important;
+  cursor: pointer !important;
+}
+
+.toast-link:hover {
+  opacity: 0.8;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 多个 Toast 的堆叠效果 */
+.toast + .toast {
+  margin-bottom: 16px;
+  transform: translateY(-8px) scale(0.95);
+}
+
+.mint-testsui-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(90deg, #3898FF 0%, #7A70FF 100%);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 40px;
+}
+
+.mint-testsui-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.mint-testsui-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.mint-testsui-button span {
+  font-size: 14px;
+}
+
+/* 如果需要自定义进度条样式 */
+.radix-themes {
+  --progress-radius: 9999px;
+}
+
+/* 进度条容器样式 */
+.funding-progress {
+  margin: 8px 0;
+}
+
+/* 自定义进度条样式 */
+.animated-progress {
+  height: 8px !important;
+  overflow: hidden;
+  background: var(--gray-a3) !important;
+}
+
+/* 进度条填充部分 */
+.animated-progress[data-state="loading"] > div {
+  background: linear-gradient(
+    90deg,
+    #3898FF 0%,
+    #7A70FF 50%,
+    #3898FF 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: shimmer 2s infinite linear !important;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* 进度条数值文本过渡 */
+.funding-progress .rt-Text {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 进度条动画 */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 进度条悬停效果 */
+.animated-progress:hover > div {
+  filter: brightness(1.1);
+  transition: filter 0.3s ease;
+}
+
+/* 确保进度条圆角一致 */
+.animated-progress,
+.animated-progress > div {
+  border-radius: 6px !important;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* 流动性池提示样式 */
+.liquidity-pool-notice {
+  background: var(--gray-a3);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.liquidity-pool-notice .rt-Text:first-child {
+  color: var(--accent-9);
+  margin-bottom: 4px;
+}
+
+/* 完成提示的样式 */
+.completion-notice {
+  background: var(--accent-a3);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 8px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.completion-notice .rt-Text:first-child {
+  color: var(--accent-9);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 百分比按钮组样式 */
+.percentage-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.percentage-button {
+  padding: 2px 8px !important;
+  font-size: 12px !important;
+  color: var(--gray-11) !important;
+  transition: all 0.2s !important;
+  height: auto !important;
+  min-width: auto !important;
+  cursor: pointer !important;
+  border-radius: 6px !important;
+}
+
+.percentage-button:hover {
+  color: var(--gray-12) !important;
+  background: var(--gray-a3) !important;
+  transform: scale(1.05);
+}
+
+/* Lending 页面样式 */
+.overview-card {
+  background: var(--gray-a3);
+  border-radius: 12px;
+  padding: 24px;
+  flex: 1;
+}
+
+.health-factor {
+  background: linear-gradient(45deg, var(--gray-a3), var(--gray-a4));
+}
+
+.main-content {
+  flex: 4 !important;
+}
+
+.interaction-panel {
+  flex: 2 !important;
+  background: var(--gray-a3);
+  border-radius: 12px;
+  min-width: 320px;
+}
+
+.section-card {
+  background: var(--gray-a3);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.asset-table {
+  background: var(--gray-a2);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  overflow: visible;
+}
+
+.table-header {
+  background: var(--gray-a4);
+  color: var(--gray-11);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.table-row {
+  border-bottom: 1px solid var(--gray-a4);
+  position: relative;
+  overflow: visible;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.asset-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.amount-input-container {
+  background: var(--gray-a2);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.amount-input {
+  background: var(--gray-a4);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.amount-input input {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  width: 100%;
+}
+
+.amount-input input:focus {
+  outline: none;
+}
+
+.submit-button {
+  width: 100%;
+  background: linear-gradient(90deg, #3898FF 0%, #7A70FF 100%);
+  margin-top: 24px;
+}
+
+.submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 添加一些动画效果 */
+.overview-card,
+.section-card,
+.interaction-panel {
+  transition: transform 0.2s ease;
+}
+
+.overview-card:hover,
+.section-card:hover {
+  transform: translateY(-2px);
+}
+
+/* 自定义 Tabs 样式 */
+.rt-TabsList {
+  background: var(--gray-a2) !important;
+  border-radius: 8px !important;
+}
+
+.rt-TabsTrigger {
+  color: var(--gray-11) !important;
+}
+
+.rt-TabsTrigger[data-state="active"] {
+  background: var(--gray-a4) !important;
+  color: white !important;
+}
+
+/* 添加新的按钮样式 */
+.action-button {
+  background: linear-gradient(90deg, #3898FF 0%, #7A70FF 100%) !important;
+  color: white !important;
+  border: none !important;
+  transition: opacity 0.2s !important;
+}
+
+.action-button:hover {
+  opacity: 0.9 !important;
+}
+
+.action-button.secondary {
+  background: var(--gray-a4) !important;
+}
+
+.action-button.secondary:hover {
+  background: var(--gray-a5) !important;
+}
+
+/* 调整 Lending 页面容器宽度 */
+.lending-container {
+  max-width: 1600px !important;
+  padding: 0 8px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+}
+
+/* 调整主内容区和交互面板的比例 */
+.main-content {
+  flex: 5 !important;
+}
+
+.interaction-panel {
+  flex: 1 !important;
+  min-width: 360px !important;
+}
+
+/* 添加以下样式 */
+.apy-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.apy-tooltip-wrapper {
+  display: none;
+  position: absolute;
+  left: 15%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  background: var(--gray-1);
+  border: 1px solid var(--gray-a4);
+  border-radius: 8px;
+  z-index: 100;
+  min-width: 200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.apy-tooltip-wrapper::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background: var(--gray-2);
+  border-right: 1px solid var(--gray-a4);
+  border-bottom: 1px solid var(--gray-a4);
+}
+
+.apy-container:hover .apy-tooltip-wrapper {
+  display: block;
+}
+
+.apy-tooltip {
+  background: var(--gray-2);
+  border-radius: 8px;
+}
+ 
