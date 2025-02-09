@@ -1,4 +1,4 @@
-const BASE_URL = 'http://118.26.36.121:3000';
+const BASE_URL = 'http://128.14.226.87:3000';
 
 const fetcher = async ({
     url,
