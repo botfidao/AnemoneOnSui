@@ -16,7 +16,7 @@ function Navigation() {
         <Flex gap="4">
         <button 
             className={`nav-button ${location.pathname === '/nftMappings' ? 'active' : ''}`}
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/nftMappings")}
           >
             NFT Mappings
           </button>
@@ -28,7 +28,7 @@ function Navigation() {
           </button>
           <button 
             className={`nav-button ${location.pathname === '/chat' ? 'active' : ''}`}
-            onClick={() => navigate("/chat")}
+            onClick={() => navigate("/chat/1392b6e9-4e6a-0e9d-aa40-1d1b7f67f2e3")}
           >
             Chat
           </button>
@@ -50,9 +50,10 @@ export default function App() {
           <Box p="4">
             <Navigation />
             <Routes>
-              <Route path="/createToken" element={<AgentMint />} />
-              <Route path="/chat/:agentId" element={<Chat />} />
-              <Route path="/" element={<Navigate to="/createToken" replace />} />
+              <Route path="/createAgent" element={<AgentMint />} />
+              <Route path="/chat/1392b6e9-4e6a-0e9d-aa40-1d1b7f67f2e3" element={<Chat />} />
+              <Route path="/nftMappings" element={<NftMappingsList />} />
+              <Route path="/" element={<Navigate to="/createAgent" replace />} />
             </Routes>
           </Box>
         </BrowserRouter>
