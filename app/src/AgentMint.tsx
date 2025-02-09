@@ -7,13 +7,13 @@ import {
   useSuiClient,
   useSignAndExecuteTransaction,
 } from "@mysten/dapp-kit";
-import { Transaction } from "@mysten/sui/transactions";
+
 import { useState } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
-import { PUMPLEND_CORE_PACKAGE_ID, API_BASE_URL } from "./config";
+
 import { Toast } from "./components/Toast";
 import { useToast } from "./hooks/useToast";
-import { data } from 'react-router-dom';
+
 
 export function AgentMint() {
   const currentAccount = useCurrentAccount();
@@ -41,7 +41,7 @@ export function AgentMint() {
         (change): change is SuiObjectChange & { type: "created" } => 
             change.type === "created"
     ) || [];
-}
+ }
 
   const handleTradingBotClick = async () => {
     let address: string | undefined;
@@ -105,6 +105,7 @@ export function AgentMint() {
                 });
 
                 const roleObjects = await getCreatedObjects(result.digest);
+                console.log('Role Objects:', roleObjects);
                 // Filter Role and BotNFT objects
                 const roleId = roleObjects.find(obj => 
                     obj.objectType.includes('::role_manager::Role'))?.objectId;
