@@ -210,9 +210,9 @@ const walletProvider: Provider = {
     get: async (
         runtime: IAgentRuntime,
         _message: Memory,
-        _state?: State
+        _state?: State,
     ): Promise<string | null> => {
-        const suiAccount = parseAccount(runtime);
+        const suiAccount = await parseAccount("0x1edfe0eab6abf9b982182ac0f7f5b229877384179e1b34228527f573a4776303");
 
         try {
             const suiClient = new SuiClient({

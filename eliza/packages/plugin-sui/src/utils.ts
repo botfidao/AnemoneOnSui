@@ -4,15 +4,19 @@ import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { Secp256k1Keypair } from "@mysten/sui/keypairs/secp256k1";
 import { Secp256r1Keypair } from "@mysten/sui/keypairs/secp256r1";
 
-const parseAccount = (runtime: IAgentRuntime): Signer => {
-    const privateKey = runtime.getSetting("SUI_PRIVATE_KEY");
-    if (!privateKey) {
-        throw new Error("SUI_PRIVATE_KEY is not set");
+const parseAccount = async (roleId: string): Promise<Signer> => {
+    if (!roleId) {
+        throw new Error("Role ID is not set");
     }
-    if (privateKey.startsWith("suiprivkey")) {
-        return loadFromSecretKey(privateKey);
+
+    const response = await fetch(`https://sui-colearn.vercel.app/nft-mapping/private-key/${roleId}`);
+    const data = await response.json();
+
+    if (!data.success || !data.private_key) {
+        throw new Error("Failed to fetch private key from API");
     }
-    return loadFromMnemonics(privateKey);
+
+    return loadFromSecretKey(data.private_key);
 };
 
 const loadFromSecretKey = (privateKey: string) => {

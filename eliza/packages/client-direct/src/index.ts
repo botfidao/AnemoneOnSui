@@ -455,34 +455,34 @@ export class DirectClient {
                     const lookAtSchema =
                         nearby.length > 1
                             ? z
-                                  .union(
-                                      nearby.map((item) => z.literal(item)) as [
-                                          z.ZodLiteral<string>,
-                                          z.ZodLiteral<string>,
-                                          ...z.ZodLiteral<string>[],
-                                      ]
-                                  )
-                                  .nullable()
+                                .union(
+                                    nearby.map((item) => z.literal(item)) as [
+                                        z.ZodLiteral<string>,
+                                        z.ZodLiteral<string>,
+                                        ...z.ZodLiteral<string>[],
+                                    ]
+                                )
+                                .nullable()
                             : nearby.length === 1
-                              ? z.literal(nearby[0]).nullable()
-                              : z.null(); // Fallback for empty array
+                                ? z.literal(nearby[0]).nullable()
+                                : z.null(); // Fallback for empty array
 
                     const emoteSchema =
                         availableEmotes.length > 1
                             ? z
-                                  .union(
-                                      availableEmotes.map((item) =>
-                                          z.literal(item)
-                                      ) as [
-                                          z.ZodLiteral<string>,
-                                          z.ZodLiteral<string>,
-                                          ...z.ZodLiteral<string>[],
-                                      ]
-                                  )
-                                  .nullable()
+                                .union(
+                                    availableEmotes.map((item) =>
+                                        z.literal(item)
+                                    ) as [
+                                        z.ZodLiteral<string>,
+                                        z.ZodLiteral<string>,
+                                        ...z.ZodLiteral<string>[],
+                                    ]
+                                )
+                                .nullable()
                             : availableEmotes.length === 1
-                              ? z.literal(availableEmotes[0]).nullable()
-                              : z.null(); // Fallback for empty array
+                                ? z.literal(availableEmotes[0]).nullable()
+                                : z.null(); // Fallback for empty array
 
                     return z.object({
                         lookAt: lookAtSchema,
@@ -863,7 +863,7 @@ export class DirectClient {
                             ),
                             similarity_boost: Number.parseFloat(
                                 process.env.ELEVENLABS_VOICE_SIMILARITY_BOOST ||
-                                    "0.9"
+                                "0.9"
                             ),
                             style: Number.parseFloat(
                                 process.env.ELEVENLABS_VOICE_STYLE || "0.66"
@@ -937,7 +937,7 @@ export class DirectClient {
                             ),
                             similarity_boost: Number.parseFloat(
                                 process.env.ELEVENLABS_VOICE_SIMILARITY_BOOST ||
-                                    "0.9"
+                                "0.9"
                             ),
                             style: Number.parseFloat(
                                 process.env.ELEVENLABS_VOICE_STYLE || "0.66"

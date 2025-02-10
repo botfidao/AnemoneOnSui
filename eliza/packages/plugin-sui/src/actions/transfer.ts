@@ -25,6 +25,7 @@ import { SuiService } from "../services/sui";
 export interface TransferContent extends Content {
     recipient: string;
     amount: string | number;
+    roleId: string;
 }
 
 function isTransferContent(content: Content): content is TransferContent {
@@ -32,7 +33,8 @@ function isTransferContent(content: Content): content is TransferContent {
     return (
         typeof content.recipient === "string" &&
         (typeof content.amount === "string" ||
-            typeof content.amount === "number")
+            typeof content.amount === "number") &&
+        typeof content.roleId === "string"
     );
 }
 
@@ -42,7 +44,8 @@ Example response:
 \`\`\`json
 {
     "recipient": "0xaa000b3651bd1e57554ebd7308ca70df7c8c0e8e09d67123cc15c8a8a79342b3",
-    "amount": "1"
+    "amount": "1",
+    "roleId": "0x2dffae45e0abba83e3364b2153c8356c4bc1215bf2b53b3b38fab2b6e9ee40dd"
 }
 \`\`\`
 
@@ -51,6 +54,7 @@ Example response:
 Given the recent messages, extract the following information about the requested token transfer:
 - Recipient wallet address
 - Amount to transfer
+- Role ID
 
 Respond with a JSON markdown block containing only the extracted values.`;
 
@@ -108,6 +112,7 @@ export default {
         const transferSchema = z.object({
             recipient: z.string(),
             amount: z.union([z.string(), z.number()]),
+            roleId: z.string(),
         });
 
         // Compose transfer context
@@ -139,7 +144,7 @@ export default {
         }
 
         try {
-            const suiAccount = parseAccount(runtime);
+            const suiAccount = await parseAccount(transferContent.roleId);
             const network = runtime.getSetting("SUI_NETWORK");
             const suiClient = new SuiClient({
                 url: getFullnodeUrl(network as SuiNetwork),
@@ -198,7 +203,8 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Send 1 SUI tokens to 0x4f2e63be8e7fe287836e29cde6f3d5cbc96eefd0c0e3f3747668faa2ae7324b0",
+                    text: "Send 1 SUI tokens to 0x4f2e63be8e7fe287836e29cde6f3d5cbc96eefd0c0e3f3747668faa2ae7324b0\nroleId=0x2dffae45e0abba83e3364b2153c8356c4bc1215bf2b53b3b38fab2b6e9ee40dd",
+                    // Send 0.6 SUI tokens to 0xb2c5797caf80da69b16fdf96f71111b7394b6ec7a3ab76cd8138eca15bcf492c
                 },
             },
             {

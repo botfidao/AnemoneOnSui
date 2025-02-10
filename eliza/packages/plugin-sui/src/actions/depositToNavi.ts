@@ -14,18 +14,22 @@ import {
 } from "@elizaos/core";
 import { SuiService } from "../services/sui";
 import { z } from "zod";
+import { RoleManager } from "../sdk";
+
 
 // Define the payload interface for deposit
 export interface DepositPayload extends Content {
     amount: string | number;
+    roleId: string;
 }
 
 // Validate the deposit content
 function isDepositContent(content: Content): content is DepositPayload {
     console.log("Content for deposit", content);
     return (
-        typeof content.amount === "string" ||
-        typeof content.amount === "number"
+        (typeof content.amount === "string" ||
+            typeof content.amount === "number") &&
+        typeof content.roleId === "string"
     );
 }
 
@@ -35,7 +39,8 @@ const depositTemplate = `Respond with a JSON markdown block containing only the 
 Example response:
 \`\`\`json
 {
-    "amount": "1"
+    "amount": "1",
+    "roleId": "0x2dffae45e0abba83e3364b2153c8356c4bc1215bf2b53b3b38fab2b6e9ee40dd"
 }
 \`\`\`
 
@@ -43,6 +48,7 @@ Example response:
 
 Given the recent messages, extract the following information about the requested SUI deposit:
 - Amount to deposit
+- Role ID
 
 Respond with a JSON markdown block containing only the extracted values.`;
 
@@ -76,6 +82,7 @@ export default {
         // Define the schema for the expected output
         const depositSchema = z.object({
             amount: z.union([z.string(), z.number()]),
+            roleId: z.string(),
         });
 
         // Compose deposit context
@@ -110,7 +117,45 @@ export default {
             }
 
             try {
-                const result = await service.depositToNavi(depositContent.amount);
+                const roleManager = new RoleManager();
+                const GAS_REQUIREMENT = 0.2; // 0.2 SUI for gas
+                const depositAmount = Number(depositContent.amount);
+                const totalRequired = depositAmount + GAS_REQUIREMENT;
+
+                // 获取地址余额
+                const balance = await service.getSuiBalance(depositContent.roleId);
+                elizaLogger.info("Current balance:", balance, "Required:", totalRequired);
+
+                // 如果余额不足，需要从 role 中提取
+                if (balance < totalRequired) {
+                    const shortfall = totalRequired - balance;
+                    elizaLogger.info("Need to withdraw from role:", shortfall);
+
+                    // 构建提取交易
+                    const withdrawTx = await roleManager.withdrawSuiAsBot(
+                        depositContent.roleId,
+                        BigInt(Math.ceil((shortfall + 0.1) * 1e9)) // 多增加0.1sui，使用 Math.ceil 确保有足够的金额
+                    );
+
+                    // 执行提取交易
+                    const withdrawResult = await service.executeRoleTransaction(withdrawTx, depositContent.roleId);
+                    if (!withdrawResult.success) {
+                        callback({
+                            text: `Failed to withdraw SUI from role: ${withdrawResult.message}`,
+                            content: { error: withdrawResult.message },
+                        });
+                        return false;
+                    }
+
+                    // 等待余额更新
+                    await service.waitForBalance(depositContent.roleId, totalRequired);
+                }
+
+                // 执行存款操作
+                const result = await service.depositToNavi(
+                    depositContent.amount,
+                    depositContent.roleId
+                );
 
                 if (result.success) {
                     callback({
@@ -149,7 +194,7 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Deposit 1 SUI to Navi",
+                    text: "Deposit 1 SUI to Navi\nroleId=0x2dffae45e0abba83e3364b2153c8356c4bc1215bf2b53b3b38fab2b6e9ee40dd",
                 },
             },
             {
