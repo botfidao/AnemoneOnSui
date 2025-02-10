@@ -2,7 +2,7 @@
 
 [move]
 version = 3
-manifest_digest = "A9DCEBAD2B8E170D53DD55EFA40A3A1F35D8CC706B66B145AA2F59133C14527E"
+manifest_digest = "3F9B4903B862B7FFED0414C12F5699B84C2AA7215BC5671BDF4D75ADB554B584"
 deps_digest = "F9B494B64F0615AED0E98FC12A85B85ECD2BC5185C22D30E7F67786BB52E507C"
 dependencies = [
   { id = "CetusClmm", name = "CetusClmm" },
@@ -13,7 +13,7 @@ dependencies = [
 
 [[move.package]]
 id = "Allowlist"
-source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "testnet", subdir = "contracts/allowlist" }
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "main", subdir = "contracts/allowlist" }
 
 dependencies = [
   { id = "Permissions", name = "Permissions" },
@@ -22,7 +22,7 @@ dependencies = [
 
 [[move.package]]
 id = "Authlist"
-source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "testnet", subdir = "contracts/authlist" }
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "main", subdir = "contracts/authlist" }
 
 dependencies = [
   { id = "Permissions", name = "Permissions" },
@@ -31,7 +31,7 @@ dependencies = [
 
 [[move.package]]
 id = "CetusClmm"
-source = { git = "https://github.com/CetusProtocol/cetus-clmm-interface.git", rev = "testnet-v1.25.0", subdir = "sui/cetus_clmm" }
+source = { git = "https://github.com/CetusProtocol/cetus-clmm-interface.git", rev = "mainnet-v1.25.0", subdir = "sui/cetus_clmm" }
 
 dependencies = [
   { id = "IntegerMate", name = "IntegerMate" },
@@ -41,7 +41,7 @@ dependencies = [
 
 [[move.package]]
 id = "IntegerMate"
-source = { git = "https://github.com/CetusProtocol/integer-mate.git", rev = "testnet-v1.23.1", subdir = "sui" }
+source = { git = "https://github.com/CetusProtocol/integer-mate.git", rev = "mainnet-v1.23.1", subdir = "sui" }
 
 dependencies = [
   { id = "Sui", name = "Sui" },
@@ -49,7 +49,7 @@ dependencies = [
 
 [[move.package]]
 id = "Kiosk"
-source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "testnet", subdir = "contracts/kiosk" }
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "main", subdir = "contracts/kiosk" }
 
 dependencies = [
   { id = "Permissions", name = "Permissions" },
@@ -67,7 +67,7 @@ dependencies = [
 
 [[move.package]]
 id = "MoveSTL"
-source = { git = "https://github.com/CetusProtocol/move-stl.git", rev = "testnet-v1.23.1", subdir = "sui" }
+source = { git = "https://github.com/CetusProtocol/move-stl.git", rev = "mainnet-v1.23.1", subdir = "sui" }
 
 dependencies = [
   { id = "Sui", name = "Sui" },
@@ -79,7 +79,7 @@ source = { git = "https://github.com/MystenLabs/sui.git", rev = "mainnet-v1.19.1
 
 [[move.package]]
 id = "NftProtocol"
-source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "testnet", subdir = "contracts/nft_protocol" }
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "main", subdir = "contracts/nft_protocol" }
 
 dependencies = [
   { id = "Allowlist", name = "Allowlist" },
@@ -95,7 +95,7 @@ dependencies = [
 
 [[move.package]]
 id = "Originmate"
-source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "testnet", subdir = "contracts/originmate" }
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "main", subdir = "contracts/originmate" }
 
 dependencies = [
   { id = "Sui", name = "Sui" },
@@ -103,7 +103,7 @@ dependencies = [
 
 [[move.package]]
 id = "Permissions"
-source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "testnet", subdir = "contracts/permissions" }
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "main", subdir = "contracts/permissions" }
 
 dependencies = [
   { id = "Sui", name = "Sui" },
@@ -112,7 +112,7 @@ dependencies = [
 
 [[move.package]]
 id = "Pseudorandom"
-source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "testnet", subdir = "contracts/pseudorandom" }
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "main", subdir = "contracts/pseudorandom" }
 
 dependencies = [
   { id = "Sui", name = "Sui" },
@@ -120,7 +120,7 @@ dependencies = [
 
 [[move.package]]
 id = "Request"
-source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "testnet", subdir = "contracts/request" }
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "main", subdir = "contracts/request" }
 
 dependencies = [
   { id = "Permissions", name = "Permissions" },
@@ -137,7 +137,7 @@ dependencies = [
 
 [[move.package]]
 id = "Utils"
-source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "testnet", subdir = "contracts/utils" }
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "main", subdir = "contracts/utils" }
 
 dependencies = [
   { id = "Pseudorandom", name = "Pseudorandom" },
