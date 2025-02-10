@@ -18,6 +18,8 @@ export function AgentSidebar() {
   const [isDepositing, setIsDepositing] = useState(false);
   const [depositAmount, setDepositAmount] = useState("1");
   const [showDepositInput, setShowDepositInput] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("1");
+  const [showWithdrawInput, setShowWithdrawInput] = useState(false);
   const roleManager = new RoleManager();
   const { roleId } = useParams();
   
@@ -107,6 +109,50 @@ export function AgentSidebar() {
     }
   };
 
+  const handleWithdrawAmountChange = (value: string) => {
+    // 只允许数字和小数点
+    const filtered = value.replace(/[^\d.]/g, '');
+    // 确保只有一个小数点
+    const parts = filtered.split('.');
+    if (parts.length > 2) {
+      return;
+    }
+    // 限制小数位数为9位
+    if (parts[1] && parts[1].length > 9) {
+      return;
+    }
+    setWithdrawAmount(filtered);
+  };
+
+  const handleWithdraw = async () => {
+    try {
+      if (!withdrawAmount || isNaN(Number(withdrawAmount)) || Number(withdrawAmount) <= 0 || !roleId || !nftData) {
+        return;
+      }
+
+      setIsDepositing(true);
+      
+      const amountInMist = BigInt(Math.floor(Number(withdrawAmount) * 1e9));
+      
+      const tx = await roleManager.withdrawSuiWithNft(
+        roleId,
+        nftData,
+        amountInMist
+      );
+
+      await signAndExecute({
+        transaction: tx,
+      });
+
+      await refetch();
+      setDepositAmount("1"); // 重置存款输入框
+    } catch (error) {
+      console.error('Withdraw failed:', error);
+    } finally {
+      setIsDepositing(false);
+    }
+  };
+
   return (
     <Box className="bg-gray-800 border-r border-gray-600 w-72 h-full p-4"> {/* 使用 Tailwind CSS 样式 */}
       <Flex direction="column" gap="4">
@@ -127,46 +173,92 @@ export function AgentSidebar() {
         <Flex direction="column" gap="2">
           <Text className="text-gray-400 text-sm">Balance</Text>
           <Text className="text-xl font-medium">{agentInfo?.balance} SUI</Text>
-          
-          {showDepositInput ? (
-            <Flex direction="column" gap="2">
-              <div className="deposit-input-container">
-                <input
-                  type="text"
-                  placeholder="输入 SUI 数量"
-                  value={depositAmount}
-                  onChange={(e) => handleDepositAmountChange(e.target.value)}
-                  className="deposit-input p-2 border border-gray-600 rounded" // 使用 Tailwind CSS 样式
-                />
-              </div>
-              <div className="deposit-actions flex gap-2">
-                <Button 
-                  className="deposit-button w-full"
-                  onClick={handleDeposit}
-                  disabled={isDepositing || !depositAmount || Number(depositAmount) <= 0}
-                >
-                  {isDepositing ? 'Depositing...' : 'Confirm'}
-                </Button>
-                <Button 
-                  className="deposit-button secondary w-full"
-                  onClick={() => {
-                    setShowDepositInput(false);
-                    setDepositAmount("1");
-                  }}
-                  disabled={isDepositing}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </Flex>
-          ) : (
-            <Button 
-              className="deposit-button w-full"
-              onClick={() => setShowDepositInput(true)}
-            >
-              Deposit SUI
-            </Button>
-          )}
+
+          {/* 存款输入框和按钮 */}
+          <Flex direction="column" gap="2">
+            {showDepositInput ? (
+              <Flex direction="column" gap="2">
+                <div className="deposit-input-container">
+                  <input
+                    type="text"
+                    placeholder="输入 SUI 数量"
+                    value={depositAmount}
+                    onChange={(e) => handleDepositAmountChange(e.target.value)}
+                    className="deposit-input p-2 border border-gray-600 rounded"
+                  />
+                </div>
+                <div className="deposit-actions flex gap-2">
+                  <Button 
+                    className="deposit-button w-full"
+                    onClick={handleDeposit}
+                    disabled={isDepositing || !depositAmount || Number(depositAmount) <= 0}
+                  >
+                    {isDepositing ? 'Depositing...' : 'Confirm Deposit'}
+                  </Button>
+                  <Button 
+                    className="deposit-button secondary w-full"
+                    onClick={() => {
+                      setShowDepositInput(false);
+                      setDepositAmount("1");
+                    }}
+                    disabled={isDepositing}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </Flex>
+            ) : (
+              <Button 
+                className="deposit-button w-full"
+                onClick={() => setShowDepositInput(true)}
+              >
+                Deposit SUI
+              </Button>
+            )}
+          </Flex>
+
+          {/* 取款输入框和按钮 */}
+          <Flex direction="column" gap="2">
+            {showWithdrawInput ? (
+              <Flex direction="column" gap="2">
+                <div className="withdraw-input-container">
+                  <input
+                    type="text"
+                    placeholder="输入取款金额"
+                    value={withdrawAmount}
+                    onChange={(e) => handleWithdrawAmountChange(e.target.value)}
+                    className="withdraw-input p-2 border border-gray-600 rounded"
+                  />
+                </div>
+                <div className="withdraw-actions flex gap-2">
+                  <Button 
+                    className="deposit-button w-full"
+                    onClick={handleWithdraw}
+                    disabled={isDepositing || !withdrawAmount || Number(withdrawAmount) <= 0}
+                  >
+                    {isDepositing ? 'Withdrawing...' : 'Confirm Withdraw'}
+                  </Button>
+                  <Button 
+                    className="deposit-button secondary w-full"
+                    onClick={() => {
+                      setShowWithdrawInput(false);
+                      setWithdrawAmount("1");
+                    }}
+                    disabled={isDepositing}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </Flex>
+            ) : (
+              <Button 
+                className="deposit-button w-full"
+                onClick={() => setShowWithdrawInput(true)}
+              >
+                Withdraw SUI
+              </Button>
+            )}
+          </Flex>
         </Flex>
       </Flex>
     </Box>
