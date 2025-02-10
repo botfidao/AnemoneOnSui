@@ -11,7 +11,7 @@ interface Message {
 }
 
 export function Chat() {
-  const { agentId } = useParams();
+  const { roleId } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -28,8 +28,7 @@ export function Chat() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading || !agentId) return;
-    console.log('agentid', agentId)
+    if (!input.trim() || isLoading || !roleId) return;
 
     const userMessage = input.trim();
     setInput("");
@@ -39,7 +38,7 @@ export function Chat() {
     setIsLoading(true);
 
     try {
-      const data = await apiClient.sendMessage(agentId, userMessage);
+      const data = await apiClient.sendMessage(roleId, userMessage);
       // 处理数组响应，连接所有文本消息
       const responses = Array.isArray(data) ? data : [data];
       const allMessages = responses
