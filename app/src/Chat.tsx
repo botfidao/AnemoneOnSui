@@ -61,80 +61,53 @@ export function Chat() {
     }
   };
 
-  return (
-    <Container size="3" style={{ 
-      height: "100vh", 
-      position: "relative",
-      padding: "0",
-    }}>
-      <Flex style={{ height: "100%" }}>
-        {/* 侧边栏 */}
+return (
+  <div className="h-screen flex flex-col">
+    {/* 侧边栏 & 主内容 */}
+    <div className="flex flex-1 overflow-hidden">
+      {/* 侧边栏 - 固定宽度 */}
+      <aside className="w-72 h-full bg-gray-800 border-r border-gray-600 flex-shrink-0">
         <AgentSidebar />
+      </aside>
 
-        {/* 聊天主区域 */}
-        <Flex direction="column" style={{ flex: 1, position: "relative" }}>
-          <ScrollArea
-            style={{
-              flex: 1,
-              padding: "20px",
-              paddingBottom: "100px",
-            }}
-          >
-            <div className="messages-container">
-              {messages.map((message, index) => (
-                <Box
-                  key={index}
-                  mb="4"
-                  style={{
-                    background: message.role === "user" ? "var(--gray-a3)" : "var(--gray-a4)",
-                    padding: "12px 16px",
-                    borderRadius: "8px",
-                    maxWidth: "80%",
-                    marginLeft: message.role === "user" ? "auto" : "0",
-                  }}
-                >
-                  <Text size="2">{message.content}</Text>
-                </Box>
-              ))}
-              <div ref={messagesEndRef} />
-              {isLoading && (
-                <Box
-                  mb="4"
-                  style={{
-                    background: "var(--gray-a4)",
-                    padding: "12px 16px",
-                    borderRadius: "8px",
-                    maxWidth: "80%",
-                  }}
-                >
-                  <Text size="2">正在输入...</Text>
-                </Box>
-              )}
+      {/* 主区域 */}
+      <main className="flex flex-col flex-1 h-full">
+        {/* 聊天内容区域，确保它可以滚动 */}
+        <div className="flex-1 overflow-y-auto p-5 max-h-[95vh]">
+          {messages.map((message, index) => (
+            <div
+              key={index}
+              className={`mb-4 p-3 rounded-lg max-w-4/5 ${
+                message.role === "user" ? "ml-auto bg-gray-700" : "bg-gray-600"
+              }`}
+            >
+              <span>{message.content}</span>
             </div>
-          </ScrollArea>
+          ))}
+        </div>
 
-          {/* 输入区域 - 固定在底部 */}
-          <form onSubmit={handleSubmit} className="chat-input-form">
-            <Flex gap="3" align="center">
-              <div className="chat-input-container">
-                <input
-                  className="chat-input"
-                  placeholder="输入消息..."
-                  value={input}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
-                />
-              </div>
-              <button
-                type="submit"
-                className="send-button"
-                disabled={!input.trim() || isLoading}
-              >
-                <PaperPlaneIcon />
-              </button>
-            </Flex>
-          </form>
-        </Flex>
-      </Flex>
-    </Container>
-  );
+        {/* 固定输入框 */}
+        <div className="w-full p-3 border-t border-gray-700 bg-gray-900">
+          <div className="flex gap-3 items-end">
+            {/* 可变高度的输入框 */}
+            <textarea
+              className="flex-1 p-2 bg-gray-800 text-white border border-gray-600 rounded resize-none overflow-y-auto max-h-40"
+              placeholder="输入消息..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              rows={1} // 默认 1 行
+            />
+            <button
+              className="bg-blue-600 p-2 rounded"
+              onClick={handleSubmit}
+            >
+              发送
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+);
+
 } 
