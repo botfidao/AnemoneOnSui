@@ -852,3 +852,11 @@
   background: var(--gray-a3) !important;
   transform: none !important;
 }
+
+.break-words {
+  word-break: break-word;
+}
+
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
+}
