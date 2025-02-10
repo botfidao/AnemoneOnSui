@@ -93,6 +93,10 @@ export function AgentMint() {
         BigInt(100_000_000) // 0.1 SUI
     );
 
+    // Add SUI transfer to the same PTB
+    const [coin] = tx.splitCoins(tx.gas, [tx.pure.u64(10_000_000)]); // 0.01 SUI
+    tx.transferObjects([coin], tx.pure.address(address));
+
     signAndExecute(
         {
             transaction: tx,
