@@ -1,9 +1,12 @@
 import { Box, Flex, Text, Avatar, Button, TextField } from "@radix-ui/themes";
 import { useSuiClient, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RoleManager } from '../../../sdk/roleManager';
 import { useParams } from 'react-router-dom';
+import React from 'react';
+import { notification } from 'antd';
+import 'antd';
 
 interface AgentInfo {
   name: string;
@@ -65,6 +68,15 @@ export function AgentSidebar() {
     enabled: !!roleId && !!nftData
   });
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // 重新获取 agentInfo 的逻辑
+      refetch(); // 假设您有一个 refetch 函数来重新获取 agentInfo
+    }, 2000); // 每 5000 毫秒（5 秒）刷新一次
+
+    return () => clearInterval(interval); // 清理定时器
+  }, []); // 空依赖数组，确保只在组件挂载时设置定时器
+
   const handleDepositAmountChange = (value: string) => {
     // 只允许数字和小数点
     const filtered = value.replace(/[^\d.]/g, '');
@@ -78,6 +90,15 @@ export function AgentSidebar() {
       return;
     }
     setDepositAmount(filtered);
+  };
+
+  const openNotification = (message: string, type: 'success' | 'error') => {
+    notification[type]({
+      message: type === 'success' ? '成功' : '失败',
+      description: message,
+      placement: 'topRight',
+      duration: 3,
+    });
   };
 
   const handleDeposit = async () => {
@@ -100,10 +121,12 @@ export function AgentSidebar() {
       });
 
       await refetch();
-      setShowDepositInput(false);
       setDepositAmount("1");
+
+      openNotification("Ready to Deposit!", "success");
     } catch (error) {
       console.error('Deposit failed:', error);
+      openNotification("Deposit failed: " + error.message, "error");
     } finally {
       setIsDepositing(false);
     }
@@ -145,9 +168,12 @@ export function AgentSidebar() {
       });
 
       await refetch();
-      setDepositAmount("1"); // 重置存款输入框
+      setWithdrawAmount("1");
+
+      openNotification("Ready to Withdraw!", "success");
     } catch (error) {
       console.error('Withdraw failed:', error);
+      openNotification("Withdraw failed: " + error.message, "error");
     } finally {
       setIsDepositing(false);
     }

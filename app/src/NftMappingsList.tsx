@@ -95,13 +95,13 @@ export function NftMappingsList() {
               style={{ color: "white" }} 
               className="text-center font-bold text-2xl mb-8 "
             >
-              Agent 仓库 
+              Agent Hub
             </Typography.Title>
     
             {!isLoggedIn && (
               <Alert
-                message="操作提示"
-                description="请连接您的钱包以查看 NFT 映射"
+                message="Operation Prompt"
+                description="Please connect your wallet to view NFT mappings"
                 type="warning"
                 showIcon
                 className="mb-8 bg-gray-800 border-gray-700 text-gray-300"
@@ -149,7 +149,7 @@ export function NftMappingsList() {
     
                         <div className="flex-1 space-y-3">
                           <div className="group flex items-center gap-2">
-                            <Tooltip title="点击复制">
+                            <Tooltip title="Copy">
                               <Typography.Text
                                 strong
                                 className="block text-gray-100 hover:text-blue-400 cursor-pointer truncate"
@@ -165,8 +165,8 @@ export function NftMappingsList() {
                             <div className="grid grid-cols-1 gap-2 text-sm">
                               {[
                                 { label: 'NFT ID', value: mapping.nft_id },
-                                { label: '地址', value: mapping.address },
-                                { label: '创建时间', value: mapping.created_at }
+                                { label: 'Address', value: mapping.address },
+                                { label: 'CreateAt', value: mapping.created_at }
                               ].map((item) => (
                                 <div key={item.label} className="flex justify-between items-center">
                                   <span className="text-gray-400">{item.label}:</span>
