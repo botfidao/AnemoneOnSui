@@ -70,14 +70,14 @@ export function Chat() {
     }
   };
 
-  return (
-    <div className="h-screen flex flex-col">
-      {/* 侧边栏 & 主内容 */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* 侧边栏 - 固定宽度 */}
-        <aside className="w-72 h-full bg-gray-800 border-r border-gray-600 flex-shrink-0">
-          <AgentSidebar />
-        </aside>
+return (
+  <div className="h-screen flex flex-col">
+    {/* 侧边栏 & 主内容 */}
+    <div className="flex flex-1 overflow-hidden">
+      {/* 侧边栏 - 固定宽度 */}
+      <aside className="w-72 h-full bg-gray-800 border-r border-gray-600 flex-shrink-0">
+        <AgentSidebar />
+      </aside>
 
         {/* 主区域 */}
         <main className="flex flex-col flex-1 h-full">
@@ -86,7 +86,7 @@ export function Chat() {
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`mb-4 p-3 rounded-lg max-w-[40%] ${
+                className={`mb-4 p-3 rounded-lg max-w-[30%] ${
                   message.role === "user" ? "ml-auto bg-gray-700" : "bg-gray-600"
                 }`}
               >
