@@ -10,7 +10,7 @@ import { AggregatorClient, Env } from "@cetusprotocol/aggregator-sdk";
 import BN from "bn.js";
 import { getTokenMetadata, TokenMetadata } from "../tokens";
 import { Signer } from "@mysten/sui/cryptography";
-import { depositCoin, borrowCoin } from 'navi-sdk/dist/libs/PTB';
+import { depositCoin, borrowCoin, withdrawCoin } from 'navi-sdk/dist/libs/PTB';
 import { pool, wUSDC } from 'navi-sdk/dist/address';
 import type { Pool, PoolConfig } from "navi-sdk/dist/types";
 import {
@@ -19,6 +19,8 @@ import {
 } from "@mysten/sui/transactions";
 import { NAVISDKClient } from "navi-sdk";
 import { Sui } from 'navi-sdk/dist/address';
+import { PACKAGE_ID } from "../sdk/config";
+
 
 const aggregatorURL = "https://api-sui.cetus.zone/router_v2/find_routes";
 
@@ -55,7 +57,6 @@ export class SuiService extends Service {
     static serviceType: ServiceType = ServiceType.TRANSCRIPTION;
     private suiClient: SuiClient;
     private network: SuiNetwork;
-    private wallet: Signer;
     private naviClient: NAVISDKClient;
 
     async initialize(runtime: IAgentRuntime): Promise<void> {
@@ -65,7 +66,6 @@ export class SuiService extends Service {
             ),
         });
         this.network = runtime.getSetting("SUI_NETWORK") as SuiNetwork;
-        this.wallet = await parseAccount(runtime);
         return null;
     }
 
@@ -74,8 +74,9 @@ export class SuiService extends Service {
         return meta;
     }
 
-    getAddress() {
-        return this.wallet.toSuiAddress();
+    async getAddress(roleId: string) {
+        const wallet = await parseAccount(roleId);
+        return wallet.toSuiAddress();
     }
 
     getAmount(amount: string | number, meta: TokenMetadata) {
@@ -102,15 +103,17 @@ export class SuiService extends Service {
         fromToken: string,
         amount: number | string,
         out_min_amount: number,
-        targetToken: string
+        targetToken: string,
+        roleId: string
     ): Promise<SwapResult> {
         const fromMeta = getTokenMetadata(fromToken);
         const toMeta = getTokenMetadata(targetToken);
         elizaLogger.info("From token metadata:", fromMeta);
         elizaLogger.info("To token metadata:", toMeta);
+        const wallet = await parseAccount(roleId);
         const client = new AggregatorClient(
             aggregatorURL,
-            this.wallet.toSuiAddress(),
+            wallet.toSuiAddress(),
             this.suiClient,
             Env.Mainnet
         );
@@ -173,7 +176,7 @@ export class SuiService extends Service {
             coin = routerTx.splitCoins(routerTx.gas, [amount]);
         } else {
             const allCoins = await this.suiClient.getCoins({
-                owner: this.wallet.toSuiAddress(),
+                owner: wallet.toSuiAddress(),
                 coinType: fromMeta.tokenAddress,
                 limit: 30,
             });
@@ -220,11 +223,11 @@ export class SuiService extends Service {
         //     ],
         //     typeArguments: [otherType],
         // });
-        routerTx.transferObjects([targetCoin], this.wallet.toSuiAddress());
-        routerTx.setSender(this.wallet.toSuiAddress());
+        routerTx.transferObjects([targetCoin], wallet.toSuiAddress());
+        routerTx.setSender(wallet.toSuiAddress());
         const result = await client.signAndExecuteTransaction(
             routerTx,
-            this.wallet
+            wallet
         );
 
         await this.suiClient.waitForTransaction({
@@ -238,10 +241,11 @@ export class SuiService extends Service {
         };
     }
 
-    async depositToNavi(amount: string | number): Promise<SwapResult> {
+    async depositToNavi(amount: string | number, roleId: string): Promise<SwapResult> {
         try {
             const tx = new Transaction();
             const suiPoolConfig: PoolConfig = pool['Sui'];
+            const wallet = await parseAccount(roleId);
 
             // Convert amount to MIST (1 SUI = 10^9 MIST)
             const amountInMist = Number(amount) * Math.pow(10, 9);
@@ -253,9 +257,9 @@ export class SuiService extends Service {
             await depositCoin(tx, suiPoolConfig, suiCoin, amountInMist);
 
             // Execute transaction
-            tx.setSender(this.wallet.toSuiAddress());
+            tx.setSender(wallet.toSuiAddress());
             const result = await this.suiClient.signAndExecuteTransaction({
-                signer: this.wallet,
+                signer: wallet,
                 transaction: tx,
             });
 
@@ -270,6 +274,48 @@ export class SuiService extends Service {
             };
         } catch (error) {
             elizaLogger.error("Error depositing to Navi:", error);
+            return {
+                success: false,
+                tx: "",
+                message: error.message,
+            };
+        }
+    }
+
+    async withdrawSuiFromNaviAndDepositToRole(amount: string | number, roleId: string): Promise<SwapResult> {
+        try {
+            const tx = new Transaction();
+            const suiPoolConfig = pool['Sui'];
+            const wallet = await parseAccount(roleId);
+
+            // Convert amount to MIST (1 SUI = 10^9 MIST)
+            const amountInMist = Number(amount) * Math.pow(10, 9);
+            // Add withdraw transaction
+            const [returnedCoin] = await withdrawCoin(tx, suiPoolConfig, amountInMist);
+
+            tx.moveCall({
+                target: `${PACKAGE_ID}::role_manager::deposit_sui`,
+                arguments: [tx.object(roleId), returnedCoin],
+            });
+
+            // Execute transaction
+            tx.setSender(wallet.toSuiAddress());
+            const result = await this.suiClient.signAndExecuteTransaction({
+                signer: wallet,
+                transaction: tx,
+            });
+
+            await this.suiClient.waitForTransaction({
+                digest: result.digest,
+            });
+
+            return {
+                success: true,
+                tx: result.digest,
+                message: "Withdraw successful",
+            };
+        } catch (error) {
+            elizaLogger.error("Error withdrawing from Navi:", error);
             return {
                 success: false,
                 tx: "",
@@ -293,7 +339,9 @@ export class SuiService extends Service {
         }
     }
 
-    async getNaviPortfolio(address: string): Promise<NaviPortfolioInfo> {
+    async getNaviPortfolio(roleId: string): Promise<NaviPortfolioInfo> {
+        const wallet = await parseAccount(roleId);
+        const address = wallet.toSuiAddress();
         if (!this.naviClient) {
             this.naviClient = new NAVISDKClient({
                 networkType: this.network,
@@ -316,5 +364,77 @@ export class SuiService extends Service {
             rewards,
             healthFactor
         };
+    }
+
+    async getSuiBalance(roleId: string): Promise<number> {
+        const wallet = await parseAccount(roleId);
+        const balance = await this.suiClient.getBalance({
+            owner: wallet.toSuiAddress(),
+            coinType: "0x2::sui::SUI"
+        });
+        return Number(balance.totalBalance) / 1e9; // 转换为 SUI 单位
+    }
+
+    async executeTransaction(tx: Transaction, roleId: string): Promise<SwapResult> {
+        try {
+            const wallet = await parseAccount(roleId);
+            tx.setSender(wallet.toSuiAddress());
+            const result = await this.suiClient.signAndExecuteTransaction({
+                signer: wallet,
+                transaction: tx,
+            });
+
+            await this.suiClient.waitForTransaction({
+                digest: result.digest,
+            });
+
+            return {
+                success: true,
+                tx: result.digest,
+                message: "Transaction successful"
+            };
+        } catch (error) {
+            return {
+                success: false,
+                tx: "",
+                message: error.message
+            };
+        }
+    }
+
+    async waitForBalance(roleId: string, requiredBalance: number, maxAttempts = 10): Promise<void> {
+        for (let i = 0; i < maxAttempts; i++) {
+            const balance = await this.getSuiBalance(roleId);
+            if (balance >= requiredBalance) {
+                return;
+            }
+            await new Promise(resolve => setTimeout(resolve, 1000)); // 等待1秒
+        }
+        throw new Error("Balance not updated after maximum attempts");
+    }
+
+    async executeRoleTransaction(tx: any, roleId: string): Promise<{ success: boolean; message: string }> {
+        try {
+            const wallet = await parseAccount(roleId);
+            tx.setSender(wallet.toSuiAddress());
+            const result = await this.suiClient.signAndExecuteTransaction({
+                signer: wallet,
+                transaction: tx,
+            });
+
+            await this.suiClient.waitForTransaction({
+                digest: result.digest,
+            });
+
+            return {
+                success: true,
+                message: "Transaction successful"
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.message
+            };
+        }
     }
 }

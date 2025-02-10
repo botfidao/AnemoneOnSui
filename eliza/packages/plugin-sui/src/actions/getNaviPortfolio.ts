@@ -10,6 +10,8 @@ import {
     type Action,
 } from "@elizaos/core";
 import { SuiService } from "../services/sui";
+import { z } from "zod";
+import { composeContext, generateObject } from "@elizaos/core";
 
 // Add helper function for formatting numbers
 function formatTokenAmount(amount: number, decimals: number = 9): string {
@@ -23,6 +25,33 @@ const REWARD_TOKEN_MAP: { [key: string]: string } = {
     // 可以轻松添加更多奖励类型
     // 'someKey': 'TOKEN_NAME',
 };
+
+// Template for extracting portfolio information
+const portfolioTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+
+Example response:
+\`\`\`json
+{
+    "roleId": "0x2dffae45e0abba83e3364b2153c8356c4bc1215bf2b53b3b38fab2b6e9ee40dd"
+}
+\`\`\`
+
+{{recentMessages}}
+
+Given the recent messages, extract the following information about the Navi portfolio request:
+- Role ID
+
+Respond with a JSON markdown block containing only the extracted values.`;
+
+// Define the payload interface
+export interface PortfolioPayload extends Content {
+    roleId: string;
+}
+
+// Validate the portfolio content
+function isPortfolioContent(content: Content): content is PortfolioPayload {
+    return typeof content.roleId === "string";
+}
 
 export default {
     name: "GET_NAVI_PORTFOLIO",
@@ -39,10 +68,36 @@ export default {
         callback?: HandlerCallback
     ): Promise<boolean> => {
         const service = runtime.getService<SuiService>(ServiceType.TRANSCRIPTION);
-        const address = service.getAddress();
+
+        if (!state) {
+            state = (await runtime.composeState(message)) as State;
+        } else {
+            state = await runtime.updateRecentMessageState(state);
+        }
+
+        // Define the schema for the expected output
+        const portfolioSchema = z.object({
+            roleId: z.string(),
+        });
+
+        // Compose portfolio context
+        const portfolioContext = composeContext({
+            state,
+            template: portfolioTemplate,
+        });
+
+        // Generate portfolio content with the schema
+        const content = await generateObject({
+            runtime,
+            context: portfolioContext,
+            schema: portfolioSchema,
+            modelClass: ModelClass.SMALL,
+        });
+
+        const portfolioContent = content.object as PortfolioPayload;
 
         try {
-            const naviInfo = await service.getNaviPortfolio(address);
+            const naviInfo = await service.getNaviPortfolio(portfolioContent.roleId);
 
             // Format portfolio information
             let portfolioText = "📊 Navi Portfolio Summary\n\n";
@@ -69,16 +124,9 @@ export default {
             portfolioText += `Max LTV: ${(Number(naviInfo.poolInfo.max_ltv) * 100).toFixed(0)}%\n`;
 
             // Add health factor
-            portfolioText += `\n💪 Health Factor: ${naviInfo.healthFactor.toFixed(2)}\n`;
-
-            // Add rewards
-            if (Object.keys(naviInfo.rewards).length > 0) {
-                portfolioText += "\n🎁 Available Rewards:\n";
-                Object.entries(naviInfo.rewards).forEach(([key, reward]) => {
-                    const tokenType = REWARD_TOKEN_MAP[key] || 'Unknown';
-                    portfolioText += `${reward.available} ${tokenType}\n`;
-                });
-            }
+            portfolioText += "\n💪 Health Factor: ";
+            portfolioText += naviInfo.healthFactor > 100000 ? "∞" : naviInfo.healthFactor.toFixed(2);
+            portfolioText += "\n";
 
             callback({
                 text: portfolioText,
@@ -100,7 +148,7 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Show Navi portfolio",
+                    text: "Show Navi portfolio\nroleId=0x2dffae45e0abba83e3364b2153c8356c4bc1215bf2b53b3b38fab2b6e9ee40dd",
                 },
             },
             {

@@ -20,6 +20,7 @@ export interface SwapPayload extends Content {
     from_token: string;
     destination_token: string;
     amount: string | number;
+    roleId: string;
 }
 
 function isSwapContent(content: Content): content is SwapPayload {
@@ -28,7 +29,8 @@ function isSwapContent(content: Content): content is SwapPayload {
         typeof content.from_token === "string" &&
         typeof content.destination_token === "string" &&
         (typeof content.amount === "string" ||
-            typeof content.amount === "number")
+            typeof content.amount === "number") &&
+        typeof content.roleId === "string"
     );
 }
 
@@ -39,7 +41,8 @@ Example response:
 {
     "from_token": "sui",
     "destination_token": "usdc",
-    "amount": "1"
+    "amount": "1",
+    "roleId": "0x2dffae45e0abba83e3364b2153c8356c4bc1215bf2b53b3b38fab2b6e9ee40dd"
 }
 \`\`\`
 
@@ -49,7 +52,7 @@ Given the recent messages, extract the following information about the requested
 - Source Token you want to swap from
 - Destination token you want to swap to
 - Source Token Amount to swap
-
+- Role ID
 
 Respond with a JSON markdown block containing only the extracted values.`;
 
@@ -86,6 +89,7 @@ export default {
             from_token: z.string(),
             destination_token: z.string(),
             amount: z.union([z.string(), z.number()]),
+            roleId: z.string(),
         });
 
         // Compose transfer context
@@ -158,7 +162,8 @@ export default {
                         fromToken.symbol,
                         swapAmount.toString(),
                         0,
-                        destinationToken.symbol
+                        destinationToken.symbol,
+                        swapContent.roleId
                     );
 
                     if (result.success) {
@@ -202,7 +207,7 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Swap 1 SUI to USDC",
+                    text: "Swap 1 SUI to USDC\nroleId=0x2dffae45e0abba83e3364b2153c8356c4bc1215bf2b53b3b38fab2b6e9ee40dd",
                 },
             },
             {
@@ -223,7 +228,7 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Swap 1 USDC to SUI",
+                    text: "Swap 1 USDC to SUI\nroleId=0x2dffae45e0abba83e3364b2153c8356c4bc1215bf2b53b3b38fab2b6e9ee40dd",
                 },
             },
             {
