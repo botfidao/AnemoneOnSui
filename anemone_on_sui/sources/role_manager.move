@@ -27,6 +27,7 @@ module anemone::role_manager {
     const ERR_SKILL_ALREADY_EXISTS: u64 = 105;
     const ERR_SKILL_NOT_FOUND: u64 = 106;
     const ERR_SKILL_NOT_ENABLED: u64 = 107;
+    const ERR_INSUFFICIENT_BALANCE: u64 = 108;
 
     /// Role object definition
     public struct Role has key, store {
@@ -260,6 +261,66 @@ module anemone::role_manager {
         };
 
         assert!(found, ERR_SKILL_NOT_FOUND);
+    }
+
+    /// Withdraw SUI using BotNFT ownership verification
+    public entry fun withdraw_sui_with_nft(
+        role: &mut Role,
+        bot_nft: &BotNFT,
+        amount: u64,
+        ctx: &mut TxContext
+    ) {
+        // Verify ownership
+        let bot_nft_id = object::id(bot_nft);
+        assert!(
+            bot_nft_id == role.bot_nft_id,
+            ERR_NOT_AUTHORIZED
+        );
+
+        // Check balance
+        assert!(
+            balance::value(&role.balance) >= amount,
+            ERR_INSUFFICIENT_BALANCE
+        );
+
+        // Transfer SUI to sender
+        let withdrawn_coin = coin::from_balance(
+            balance::split(&mut role.balance, amount),
+            ctx
+        );
+        transfer::public_transfer(
+            withdrawn_coin,
+            tx_context::sender(ctx)
+        );
+    }
+
+    /// Withdraw SUI using bot_address verification
+    public entry fun withdraw_sui_as_bot(
+        role: &mut Role,
+        amount: u64,
+        ctx: &mut TxContext
+    ) {
+        // Verify bot address
+        assert!(
+            tx_context::sender(ctx) == role.bot_address,
+            ERR_NOT_BOT_ADDRESS
+        );
+
+        // Check balance
+        assert!(
+            balance::value(&role.balance) >= amount,
+            ERR_INSUFFICIENT_BALANCE
+        );
+
+        // Transfer SUI to sender
+        let withdrawn_coin = coin::from_balance(
+            balance::split(&mut role.balance, amount),
+            ctx
+        );
+        transfer::public_transfer(
+            withdrawn_coin,
+            tx_context::sender(ctx)
+        );
     }
 
 }
