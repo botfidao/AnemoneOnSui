@@ -19,8 +19,8 @@ export function AgentSidebar() {
   const [showDepositInput, setShowDepositInput] = useState(false);
   const roleManager = new RoleManager();
   
-  const roleId = "0xa4e00742a13343d66dae4a0bb4592b3f0db6a293edc9673fa67109b9f5028beb";
-  const nftId = "0x06953dfa842ede9b5687756afba90c5392a2a76f28084d574743a0de5b744051";
+  const roleId = "0x2dffae45e0abba83e3364b2153c8356c4bc1215bf2b53b3b38fab2b6e9ee40dd";
+  const nftId = "0x044d9784dd5f1432cc976306580c088ed3641cfbffddfeaeb00439f9e292b9d9";
 
   const { data: agentInfo, refetch } = useQuery<AgentInfo>({
     queryKey: ['agentInfo', roleId, nftId],
