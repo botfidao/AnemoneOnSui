@@ -94,7 +94,7 @@ export function AgentSidebar() {
 
   const openNotification = (message: string, type: 'success' | 'error') => {
     notification[type]({
-      message: type === 'success' ? '成功' : '失败',
+      message: type === 'success' ? 'success' : 'fail',
       description: message,
       placement: 'topRight',
       duration: 3,
@@ -116,18 +116,31 @@ export function AgentSidebar() {
         amountInMist
       );
 
-      await signAndExecute({
-        transaction: tx,
-      });
+      await signAndExecute(
+        {
+          transaction: tx,
+        },
+        {
+          onSuccess: async (result) => {
+            openNotification("Deposit successful!", "success");
+            await suiClient.waitForTransaction({
+              digest: result.digest,
+            });
+            setIsDepositing(false);
+          },
+          onError: (error) => {
+            console.error('Deposit failed:', error);
+            openNotification("Deposit failed: " + error.message, "error");
+            setIsDepositing(false);
+          },
+        }
+      );
 
       await refetch();
       setDepositAmount("1");
-
-      openNotification("Ready to Deposit!", "success");
     } catch (error) {
       console.error('Deposit failed:', error);
       openNotification("Deposit failed: " + error.message, "error");
-    } finally {
       setIsDepositing(false);
     }
   };
@@ -163,18 +176,31 @@ export function AgentSidebar() {
         amountInMist
       );
 
-      await signAndExecute({
-        transaction: tx,
-      });
+      await signAndExecute(
+        {
+          transaction: tx,
+        },
+        {
+          onSuccess: async (result) => {
+            openNotification("Withdraw successful!", "success");
+            await suiClient.waitForTransaction({
+              digest: result.digest,
+            });
+            setIsDepositing(false);
+          },
+          onError: (error) => {
+            console.error('Withdraw failed:', error);
+            openNotification("Withdraw failed: " + error.message, "error");
+            setIsDepositing(false);
+          },
+        }
+      );
 
       await refetch();
       setWithdrawAmount("1");
-
-      openNotification("Ready to Withdraw!", "success");
     } catch (error) {
       console.error('Withdraw failed:', error);
       openNotification("Withdraw failed: " + error.message, "error");
-    } finally {
       setIsDepositing(false);
     }
   };
@@ -190,10 +216,14 @@ export function AgentSidebar() {
         />
         
         <Box>
-          <Text className="text-lg font-bold mb-2">{agentInfo?.name}</Text>
-          <Text className="text-gray-400 text-sm" style={{ lineHeight: "1.5" }}>
-            {agentInfo?.description}
-          </Text>
+          <Box>
+            <Text className="text-lg font-bold mb-2">{agentInfo?.name}</Text>
+          </Box>
+          <Box>
+            <Text className="text-gray-400 text-sm mb-2" style={{ lineHeight: "1.5" }}>
+              {agentInfo?.description}
+            </Text>
+          </Box>
         </Box>
 
         <Flex direction="column" gap="2">

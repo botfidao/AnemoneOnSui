@@ -101,7 +101,7 @@ export function NftMappingsList() {
             {!isLoggedIn && (
               <Alert
                 message="Operation Prompt"
-                description="Please connect your wallet to view NFT mappings"
+                description="Please connect your wallet to view Agents"
                 type="warning"
                 showIcon
                 className="mb-8 bg-gray-800 border-gray-700 text-gray-300"

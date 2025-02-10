@@ -12,7 +12,7 @@ function Navigation() {
   return (
     <Flex justify="between" align="center" mb="6">
       <Flex gap="6" align="center">
-        <Text size="5" weight="bold">AnemoneSUI</Text>
+        <Text size="5" weight="bold">Anemone</Text>
         <Flex gap="4">
           <button 
             className={`nav-button ${location.pathname === '/AgentHub' ? 'active' : ''}`}
