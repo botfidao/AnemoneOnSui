@@ -1,4 +1,4 @@
-const BASE_URL = 'http://128.14.226.87:3000';
+const BASE_URL = 'https://anemoneframe.com/api';
 
 const fetcher = async ({
     url,
@@ -16,9 +16,9 @@ const fetcher = async ({
         headers: headers
             ? headers
             : {
-                  Accept: "application/json",
-                  "Content-Type": "application/json",
-              },
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
     };
 
     if (method === "POST") {
@@ -36,7 +36,7 @@ const fetcher = async ({
     }
 
     const response = await fetch(`${BASE_URL}${url}`, options);
-    
+
     if (!response.ok) {
         const errorText = await response.text();
         console.error("Error: ", errorText);
@@ -54,7 +54,7 @@ const fetcher = async ({
 
     // 克隆响应以便可以多次读取
     const responseClone = response.clone();
-    
+
     try {
         const data = await responseClone.json();
         console.log('Response data:', data);
@@ -73,7 +73,7 @@ export const apiClient = {
         const messageWithRole = `${message}\nroleId=${roleId}`;
         formData.append("text", messageWithRole);
         formData.append("user", "user");
-        
+
         return fetcher({
             url: `/1392b6e9-4e6a-0e9d-aa40-1d1b7f67f2e3/message`,
             method: "POST",
