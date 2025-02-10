@@ -14,7 +14,7 @@ function Navigation() {
       <Flex gap="6" align="center">
         <Text size="5" weight="bold">PumpLend</Text>
         <Flex gap="4">
-        <button 
+          <button 
             className={`nav-button ${location.pathname === '/nftMappings' ? 'active' : ''}`}
             onClick={() => navigate("/nftMappings")}
           >
@@ -25,12 +25,6 @@ function Navigation() {
             onClick={() => navigate("/createAgent")}
           >
             Create Agent
-          </button>
-          <button 
-            className={`nav-button ${location.pathname === '/chat' ? 'active' : ''}`}
-            onClick={() => navigate("/chat/1392b6e9-4e6a-0e9d-aa40-1d1b7f67f2e3")}
-          >
-            Chat
           </button>
         </Flex>
       </Flex>
@@ -51,7 +45,7 @@ export default function App() {
             <Navigation />
             <Routes>
               <Route path="/createAgent" element={<AgentMint />} />
-              <Route path="/chat/1392b6e9-4e6a-0e9d-aa40-1d1b7f67f2e3" element={<Chat />} />
+              <Route path="/chat/:roleId" element={<Chat />} />
               <Route path="/nftMappings" element={<NftMappingsList />} />
               <Route path="/" element={<Navigate to="/createAgent" replace />} />
             </Routes>

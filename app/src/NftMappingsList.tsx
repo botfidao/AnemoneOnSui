@@ -4,6 +4,7 @@ import { type SuiObjectResponse } from '@mysten/sui/client';
 import { List, Card, Typography, Image, Alert, Tooltip, message, Skeleton } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import './styles.css'
+import { useNavigate } from 'react-router-dom';
 
 export function NftMappingsList() {
     const currentAccount = useCurrentAccount();
@@ -22,6 +23,7 @@ export function NftMappingsList() {
     const [loading, setLoading] = useState(true);
     
     const suiClient = useSuiClient();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchNftMappings = async () => {
@@ -128,8 +130,9 @@ export function NftMappingsList() {
                 renderItem={(mapping) => (
                   <List.Item>
                     <Card
-                      className="hover:bg-gray-800 transition-all duration-300 rounded-xl shadow-lg border-gray-700"
+                      className="hover:bg-gray-800 transition-all duration-300 rounded-xl shadow-lg border-gray-700 cursor-pointer"
                       bodyStyle={{ padding: 0 }}
+                      onClick={() => navigate(`/chat/${mapping.role_id}`)}
                     >
                       <div className="p-6">
                         <div className="flex items-start gap-4">

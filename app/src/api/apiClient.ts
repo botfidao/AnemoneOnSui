@@ -68,13 +68,14 @@ const fetcher = async ({
 };
 
 export const apiClient = {
-    sendMessage: (agentId: string, message: string) => {
+    sendMessage: (roleId: string, message: string) => {
         const formData = new FormData();
-        formData.append("text", message);
+        const messageWithRole = `${message}\nroleId=${roleId}`;
+        formData.append("text", messageWithRole);
         formData.append("user", "user");
         
         return fetcher({
-            url: `/${agentId}/message`,
+            url: `/1392b6e9-4e6a-0e9d-aa40-1d1b7f67f2e3/message`,
             method: "POST",
             body: formData,
         });
