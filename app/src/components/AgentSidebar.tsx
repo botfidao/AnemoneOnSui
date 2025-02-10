@@ -94,27 +94,25 @@ export function AgentSidebar() {
   };
 
   return (
-    <Box className="agent-sidebar">
-      <Flex direction="column" gap="4" p="4">
+    <Box className="bg-gray-800 border-r border-gray-600 w-72 h-full p-4"> {/* 使用 Tailwind CSS 样式 */}
+      <Flex direction="column" gap="4">
         <Avatar
-          size="6"
+          size={64} // 使用 Ant Design 的 Avatar 组件
           src={agentInfo?.url}
-          radius="full"
-          fallback="A"
+          shape="circle"
+          alt="Agent Avatar"
         />
         
         <Box>
-          <Text size="5" weight="bold" mb="2">{agentInfo?.name}</Text>
-          <Text color="gray" size="2" style={{ 
-            lineHeight: "1.5"
-          }}>
+          <Text className="text-lg font-bold mb-2">{agentInfo?.name}</Text>
+          <Text className="text-gray-400 text-sm" style={{ lineHeight: "1.5" }}>
             {agentInfo?.description}
           </Text>
         </Box>
 
         <Flex direction="column" gap="2">
-          <Text size="2" color="gray">Balance</Text>
-          <Text size="4" weight="medium">{agentInfo?.balance} SUI</Text>
+          <Text className="text-gray-400 text-sm">Balance</Text>
+          <Text className="text-xl font-medium">{agentInfo?.balance} SUI</Text>
           
           {showDepositInput ? (
             <Flex direction="column" gap="2">
@@ -124,19 +122,19 @@ export function AgentSidebar() {
                   placeholder="输入 SUI 数量"
                   value={depositAmount}
                   onChange={(e) => handleDepositAmountChange(e.target.value)}
-                  className="deposit-input"
+                  className="deposit-input p-2 border border-gray-600 rounded" // 使用 Tailwind CSS 样式
                 />
               </div>
-              <div className="deposit-actions">
+              <div className="deposit-actions flex gap-2">
                 <Button 
-                  className="deposit-button"
+                  className="deposit-button w-full"
                   onClick={handleDeposit}
                   disabled={isDepositing || !depositAmount || Number(depositAmount) <= 0}
                 >
                   {isDepositing ? 'Depositing...' : 'Confirm'}
                 </Button>
                 <Button 
-                  className="deposit-button secondary"
+                  className="deposit-button secondary w-full"
                   onClick={() => {
                     setShowDepositInput(false);
                     setDepositAmount("1");
@@ -149,7 +147,7 @@ export function AgentSidebar() {
             </Flex>
           ) : (
             <Button 
-              className="deposit-button"
+              className="deposit-button w-full"
               onClick={() => setShowDepositInput(true)}
             >
               Deposit SUI

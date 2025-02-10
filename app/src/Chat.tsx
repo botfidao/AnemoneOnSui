@@ -29,6 +29,7 @@ export function Chat() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading || !agentId) return;
+    console.log('agentid', agentId)
 
     const userMessage = input.trim();
     setInput("");
