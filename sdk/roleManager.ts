@@ -145,4 +145,51 @@ export class RoleManager {
 
         return tx;
     }
+
+    /**
+     * Withdraw SUI using Bot NFT ownership verification
+     * @param roleId - The Role object ID
+     * @param botNftId - The Bot NFT object ID
+     * @param amount - Amount of SUI to withdraw (in MIST)
+     */
+    async withdrawSuiWithNft(
+        roleId: string,
+        botNftId: string,
+        amount: bigint
+    ) {
+        const tx = new Transaction();
+
+        tx.moveCall({
+            target: `${PACKAGE_ID}::role_manager::withdraw_sui_with_nft`,
+            arguments: [
+                tx.object(roleId),
+                tx.object(botNftId),
+                tx.pure.u64(amount)
+            ],
+        });
+
+        return tx;
+    }
+
+    /**
+     * Withdraw SUI using bot address verification
+     * @param roleId - The Role object ID
+     * @param amount - Amount of SUI to withdraw (in MIST)
+     */
+    async withdrawSuiAsBot(
+        roleId: string,
+        amount: bigint
+    ) {
+        const tx = new Transaction();
+
+        tx.moveCall({
+            target: `${PACKAGE_ID}::role_manager::withdraw_sui_as_bot`,
+            arguments: [
+                tx.object(roleId),
+                tx.pure.u64(amount)
+            ],
+        });
+
+        return tx;
+    }
 } 

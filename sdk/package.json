@@ -1,4 +1,6 @@
 {
+	"name": "Anemone-Sui-SDK",
+	"version": "1.0.0",
 	"dependencies": {
 		"@mysten/sui": "1.14.2",
 		"@types/node": "^22.10.10",
