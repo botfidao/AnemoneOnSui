@@ -32,13 +32,13 @@ export function Chat() {
 
     const userMessage = input.trim();
     setInput("");
-    
+
     // 添加用户消息
     setMessages(prev => [...prev, { role: "user", content: userMessage }]);
     setIsLoading(true); // 设置加载状态
 
     // 添加骨架占位符
-    setMessages(prev => [...prev, { role: "assistant", content: "正在加载..." }]);
+    setMessages(prev => [...prev, { role: "assistant", content: "Loading..." }]);
 
     try {
       const data = await apiClient.sendMessage(roleId, userMessage);
@@ -51,8 +51,8 @@ export function Chat() {
       // 更新消息，替换骨架占位符
       setMessages(prev => {
         const updatedMessages = prev.slice(0, -1); // 移除最后一条骨架消息
-        return [...updatedMessages, { 
-          role: "assistant", 
+        return [...updatedMessages, {
+          role: "assistant",
           content: allMessages || "无回复内容"
         }];
       });
@@ -60,9 +60,9 @@ export function Chat() {
       console.error("发送消息失败:", error);
       setMessages(prev => {
         const updatedMessages = prev.slice(0, -1); // 移除最后一条骨架消息
-        return [...updatedMessages, { 
-          role: "assistant", 
-          content: error instanceof Error ? error.message : "抱歉，发送消息失败，请稍后重试。" 
+        return [...updatedMessages, {
+          role: "assistant",
+          content: error instanceof Error ? error.message : "抱歉，发送消息失败，请稍后重试。"
         }];
       });
     } finally {
@@ -70,14 +70,14 @@ export function Chat() {
     }
   };
 
-return (
-  <div className="h-screen flex flex-col">
-    {/* 侧边栏 & 主内容 */}
-    <div className="flex flex-1 overflow-hidden">
-      {/* 侧边栏 - 固定宽度 */}
-      <aside className="w-72 h-full bg-gray-800 border-r border-gray-600 flex-shrink-0">
-        <AgentSidebar />
-      </aside>
+  return (
+    <div className="h-screen flex flex-col">
+      {/* 侧边栏 & 主内容 */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* 侧边栏 - 固定宽度 */}
+        <aside className="w-72 h-full bg-gray-800 border-r border-gray-600 flex-shrink-0">
+          <AgentSidebar />
+        </aside>
 
         {/* 主区域 */}
         <main className="flex flex-col flex-1 h-full">
@@ -86,9 +86,8 @@ return (
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`mb-4 p-3 rounded-lg max-w-[30%] ${
-                  message.role === "user" ? "ml-auto bg-gray-700" : "bg-gray-600"
-                }`}
+                className={`mb-4 p-3 rounded-lg max-w-[30%] ${message.role === "user" ? "ml-auto bg-gray-700" : "bg-gray-600"
+                  }`}
               >
                 <span className="whitespace-pre-wrap">{message.content}</span>
               </div>

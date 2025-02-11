@@ -75,7 +75,7 @@ export const apiClient = {
         formData.append("user", "user");
 
         return fetcher({
-            url: `/1392b6e9-4e6a-0e9d-aa40-1d1b7f67f2e3/message`,
+            url: `/a6cd6712-4ad3-0396-8892-7bd297117635/message`,
             method: "POST",
             body: formData,
         });

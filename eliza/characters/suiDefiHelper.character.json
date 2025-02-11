@@ -1,7 +1,7 @@
 {
-    "name": "blockchainHelper",
+    "name": "suiDefiHelper",
     "clients": [],
-    "modelProvider": "atoma",
+    "modelProvider": "openai",
     "settings": {
         "voice": {
             "model": "en_US-male-medium"
