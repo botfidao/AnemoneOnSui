@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSuiClient, useCurrentAccount } from '@mysten/dapp-kit';
 import { type SuiObjectResponse } from '@mysten/sui/client';
-import { List, Card, Typography, Image, Alert, Tooltip, message, Skeleton } from 'antd';
+import { List, Card, Typography, Image, Alert, Tooltip, message, Skeleton, Button } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import './styles.css'
 import { useNavigate } from 'react-router-dom';
@@ -130,9 +130,8 @@ export function NftMappingsList() {
                 renderItem={(mapping) => (
                   <List.Item>
                     <Card
-                      className="hover:bg-gray-800 transition-all duration-300 rounded-xl shadow-lg border-gray-700 cursor-pointer"
+                      className="hover:bg-gray-800 transition-all duration-300 rounded-xl shadow-lg border-gray-700"
                       bodyStyle={{ padding: 0 }}
-                      onClick={() => navigate(`/chat/${mapping.role_id}`)}
                     >
                       <div className="p-6">
                         <div className="flex items-start gap-4">
@@ -189,6 +188,16 @@ export function NftMappingsList() {
                                   </Typography.Text>
                                 </div>
                               )}
+
+                              <div className="col-span-full pt-3">
+                                <Button
+                                  type="primary"
+                                  className="w-full bg-blue-600 hover:bg-blue-700"
+                                  onClick={() => navigate(`/chat/${mapping.role_id}`)}
+                                >
+                                  Chat
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         </div>

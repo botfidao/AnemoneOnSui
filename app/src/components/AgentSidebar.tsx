@@ -237,7 +237,7 @@ export function AgentSidebar() {
                 <div className="deposit-input-container">
                   <input
                     type="text"
-                    placeholder="输入 SUI 数量"
+                    placeholder=""
                     value={depositAmount}
                     onChange={(e) => handleDepositAmountChange(e.target.value)}
                     className="deposit-input p-2 border border-gray-600 rounded"
